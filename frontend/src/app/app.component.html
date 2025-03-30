@@ -1,0 +1,15 @@
+<nav class="navbar">
+    <div class="navbar-left">
+        <a routerLink="/" class="navbar-logo">TaskFlow</a>
+    </div>
+    <div class="navbar-right">
+        <a routerLink="/dashboard" *ngIf="isLoggedIn">Dashboard</a>
+        <a routerLink="/friends" *ngIf="isLoggedIn">Friends</a>
+        <a routerLink="/tasks" *ngIf="isLoggedIn">My Tasks</a>
+        <a (click)="logout()" *ngIf="isLoggedIn" style="cursor: pointer;">Logout</a>
+        <a routerLink="/login" *ngIf="!isLoggedIn">Login</a>
+        <a routerLink="/register" *ngIf="!isLoggedIn">Register</a>
+    </div>
+</nav>
+
+<router-outlet></router-outlet>
