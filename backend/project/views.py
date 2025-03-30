@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 
 from project.models import ProjectMembership, Project
 from project.serializers import ProjectSerializer
+from task.models import Task
+from task.serializers import TaskSerializer
 
 
 class ProjectApiView(APIView):
@@ -53,3 +55,12 @@ class ProjectApiView(APIView):
             return Response({"error": "Only admins can delete this project."}, status=403)
         project.delete()
         return Response({"detail": "Project deleted."}, status=204)
+
+
+class ProjectTaskListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, project_id):
+        tasks = Task.objects.filter(project__id=project_id, is_deleted=False)
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)

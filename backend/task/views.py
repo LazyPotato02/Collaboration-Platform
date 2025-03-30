@@ -48,13 +48,3 @@ class TaskListView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#TODO: Make api view that shows project tasks filtered by project id
-
-
-class ProjectTaskListView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, project_id):
-        tasks = Task.objects.filter(project__id=project_id, is_deleted=False)
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
