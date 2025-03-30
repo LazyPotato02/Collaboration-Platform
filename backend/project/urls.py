@@ -4,5 +4,5 @@ from project.views import ProjectApiView, ProjectTaskListView
 
 urlpatterns = [
     path('', ProjectApiView.as_view(), name='project-view'),
-    path ('<id:int>', ProjectTaskListView, name='project-task-list'),
+    path('<int:id>', ProjectTaskListView.as_view(), name='project-task-list'),
 ]
