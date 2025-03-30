@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from project.models import ProjectMembership
 from task.models import Task
 from task.serializers import TaskSerializer
 
@@ -12,9 +13,6 @@ class TaskListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        if not request.user.is_authenticated:
-            return Response({"error": "Unauthorized"}, status=401)
-
         tasks = Task.objects.filter(assigned_to=request.user, is_deleted=False)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
@@ -38,11 +36,12 @@ class TaskListView(APIView):
             return Response({"error": "You don't have permission to update this task."},
                             status=status.HTTP_403_FORBIDDEN)
 
-        serializer = TaskSerializer(task, data=request.data, partial=True)
+        serializer = TaskSerializer(task, data=request.data, partial=True, context={'request': request})
+
         if serializer.is_valid():
             new_status = serializer.validated_data.get("status")
-            if new_status == "done":
-                serializer.save(is_deleted=True)
+            if new_status == "finished":
+                    serializer.save(is_deleted=True)
             else:
                 serializer.save()
             return Response(serializer.data)
@@ -50,3 +49,12 @@ class TaskListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #TODO: Make api view that shows project tasks filtered by project id
+
+
+class ProjectTaskListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, project_id):
+        tasks = Task.objects.filter(project__id=project_id, is_deleted=False)
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)

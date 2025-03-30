@@ -10,6 +10,7 @@ class Task(models.Model):
         ('to_do', 'To Do'),
         ('in_progress', 'In Progress'),
         ('done', 'Done'),
+        ('finished', 'Finished'),
     ]
     title = models.CharField(max_length=100)
     description = models.TextField()
