@@ -36,9 +36,11 @@ export class AuthService {
     getAccessToken(): string | null {
         return localStorage.getItem('access_token');
     }
+
     getCurrentUser(): Observable<{ id: number; email: string; }> {
         return this.http.get<{ id: number; email: string; }>(`${this.apiUrl}/user/me`);
     }
+
     getRefreshToken(): string | null {
         return localStorage.getItem('refresh_token');
     }
@@ -49,18 +51,17 @@ export class AuthService {
     }
 
     login(email: string, password: string): Observable<{ access: string; refresh: string }> {
-        console.log(email)
         return this.http.post<{ access: string; refresh: string }>(`${this.apiUrl}/api/token/`, {email, password});
     }
 
-    register(email: string, password: string): Observable<{
+    register(email: string, firstName: string, lastName: string, password: string): Observable<{
         access: string;
         refresh: string;
         user: User
     }> {
         return this.http.post<{ access: string; refresh: string; user: User }>(
             `${this.apiUrl}/user/register`,
-            {email, password},
+            {email, first_name: firstName, last_name: lastName, password},
             {headers: new HttpHeaders({'Content-Type': 'application/json'})}
         );
     }

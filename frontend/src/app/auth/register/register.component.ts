@@ -19,6 +19,8 @@ export class RegisterComponent {
     constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
         this.registerForm = this.fb.group({
             email: ['', [Validators.required, Validators.email]],
+            firstName: ['', [Validators.required]],
+            lastName: ['', [Validators.required]],
             password: ['', [Validators.required, Validators.minLength(6)]]
         });
     }
@@ -27,13 +29,24 @@ export class RegisterComponent {
         if (this.registerForm.valid) {
             this.authService.register(
                 this.registerForm.value.email,
+                this.registerForm.value.firstName,
+                this.registerForm.value.lastName,
                 this.registerForm.value.password
             ).subscribe({
                 next: (response) => {
                     this.message = "Registration successful!";
                     localStorage.setItem('access_token', response.access);
                     localStorage.setItem('refresh_token', response.refresh);
-                    localStorage.setItem('user', JSON.stringify(response.user));
+                    this.authService.getCurrentUser().subscribe({
+                        next: (user) => {
+                            localStorage.setItem('user', JSON.stringify(user));
+                            this.router.navigate(['/']);
+                            window.location.reload();
+                        },
+                        error: (error) => {
+                            console.error('Failed to fetch user data:', error);
+                        }
+                    });
                     this.router.navigate(['/login']);
                     window.location.reload();
 
