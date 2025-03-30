@@ -1,3 +1,5 @@
+from asyncio import tasks
+
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -9,4 +11,5 @@ urlpatterns = [
 
     path('user/', include('user.urls')),
     path('project/', include('project.urls')),
+    path('task/', include('task.urls')),
 ]
