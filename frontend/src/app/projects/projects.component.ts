@@ -2,10 +2,13 @@ import {Component} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Observable, Subscription} from 'rxjs';
 import {ProjectServices} from '../services/projects/project.services.service';
+import {NgForOf} from '@angular/common';
 
 @Component({
     selector: 'app-projects',
-    imports: [],
+    imports: [
+        NgForOf
+    ],
     templateUrl: './projects.component.html',
     styleUrl: './projects.component.css'
 })

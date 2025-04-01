@@ -15,8 +15,7 @@ from project.models import ProjectMembership
 class CommendApiView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        task_id = request.data.get('task')
+    def get(self, request, task_id):
         comments = Comment.objects.filter(task_id=task_id, is_deleted=False)
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)

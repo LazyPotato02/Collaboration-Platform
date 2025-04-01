@@ -56,11 +56,3 @@ class ProjectApiView(APIView):
         project.delete()
         return Response({"detail": "Project deleted."}, status=204)
 
-
-class ProjectTaskListView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, project_id):
-        tasks = Task.objects.filter(project__id=project_id, is_deleted=False)
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)

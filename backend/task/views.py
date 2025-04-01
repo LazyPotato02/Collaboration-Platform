@@ -12,8 +12,12 @@ from task.serializers import TaskSerializer
 class TaskListView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        tasks = Task.objects.filter(assigned_to=request.user, is_deleted=False)
+    def get(self, request, project_id=None):
+        if project_id:
+            tasks = Task.objects.filter(project_id=project_id, is_deleted=False)
+        else:
+            tasks = Task.objects.filter(assigned_to=request.user, is_deleted=False)
+
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
@@ -41,7 +45,7 @@ class TaskListView(APIView):
         if serializer.is_valid():
             new_status = serializer.validated_data.get("status")
             if new_status == "finished":
-                    serializer.save(is_deleted=True)
+                serializer.save(is_deleted=True)
             else:
                 serializer.save()
             return Response(serializer.data)
