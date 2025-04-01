@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {ProjectServices} from '../services/projects/project.services.service';
 
 @Component({
@@ -10,9 +10,11 @@ import {ProjectServices} from '../services/projects/project.services.service';
     styleUrl: './projects.component.css'
 })
 export class ProjectsComponent {
-    id: number | undefined ;
+    id: number | undefined;
+    projectTasks: any[]| undefined;
     private routeSub!: Subscription;
-    constructor(private route: ActivatedRoute,private projectService: ProjectServices) {
+
+    constructor(private route: ActivatedRoute, private projectService: ProjectServices) {
     }
 
     ngOnInit() {
@@ -23,8 +25,12 @@ export class ProjectsComponent {
     }
 
     loadProject(id: number | undefined) {
-        console.log(id)
+        this.projectService.getProjectTasks(id).subscribe(tasks => {
+            this.projectTasks = tasks
+            console.log(this.projectTasks);
+        })
     }
+
     ngOnDestroy(): void {
         this.routeSub.unsubscribe();
     }
