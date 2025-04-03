@@ -1,25 +1,39 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {Router, RouterLink, RouterOutlet} from '@angular/router';
 import {NgForOf, NgIf} from '@angular/common';
 import {AuthService} from './auth/services/auth.services';
 import {ProjectServices} from './services/projects/project.services.service';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 
 @Component({
-  selector: 'app-root',
-    imports: [RouterOutlet, RouterLink, NgIf, NgForOf],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+    selector: 'app-root',
+    imports: [RouterOutlet, RouterLink, NgIf, NgForOf, ReactiveFormsModule],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css'
 })
 export class AppComponent {
     projects: any[] = []
-
+    isCreateProjectFormShow: boolean = false;
+    form: FormGroup;
 
     get isLoggedIn(): boolean {
         return this.authService.isAuthenticated();
     }
-    constructor(private authService: AuthService,private projectService: ProjectServices, private router: Router) {}
+
+    constructor(private authService: AuthService, private projectService: ProjectServices, private router: Router, private fb: FormBuilder) {
+        this.form = this.fb.group({
+            name: ['', [Validators.required, Validators.minLength(5)]],
+            description: ['', [Validators.required, Validators.minLength(20)]],
+        });
+    }
 
     ngOnInit(): void {
+        if (this.isLoggedIn) {
+            this.loadProjects();
+        }
+
+    }
+    loadProjects(): void {
         this.projectService.getProjects().subscribe({
             next: (data) => {
                 this.projects = data;
@@ -28,6 +42,33 @@ export class AppComponent {
                 console.error('Error loading projects:', err);
             }
         });
+    }
+    changeCreateProjectFormShow(): void {
+        this.isCreateProjectFormShow = true;
+    }
+
+    close() {
+        this.isCreateProjectFormShow = false;
+
+    }
+
+    submit() {
+        if (this.form.invalid) {
+            this.form.markAllAsTouched(); // важно!
+            return;
+        }
+        const data = this.form.value;
+
+        this.projectService.createProject(data).subscribe({
+            next: (data) => {
+                this.loadProjects();
+                this.form.reset();
+                this.close();
+            }, error: (err) => {
+                console.log(err);
+            }
+
+        })
     }
 
     logout(): void {

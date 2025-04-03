@@ -20,4 +20,8 @@ export class ProjectServices {
         return this.http.get<any[]>(this.apiUrlTasks + '/project/' + projectId)
     }
 
+    createProject(data: { name: string, description: string }) {
+        return this.http.post<any>(`${this.apiUrlProjects}/`, data);
+    }
+
 }
