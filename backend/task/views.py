@@ -22,24 +22,23 @@ class TaskListView(APIView):
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
-    def post(self, request):
+    def post(self, request, project_id=None):
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request):
-        task_id = request.data.get("id")
+    def patch(self, request, project_id=None):
         try:
-            task = Task.objects.get(id=task_id)
+            task = Task.objects.get(id=project_id)
         except Task.DoesNotExist:
             return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        is_assigned_to = task.assigned_to and task.assigned_to.id == request.user.id
-        if not is_assigned_to:
-            return Response({"error": "You don't have permission to update this task."},
-                            status=status.HTTP_403_FORBIDDEN)
+        # is_assigned_to = task.assigned_to and task.assigned_to.id == request.user.id
+        # if not is_assigned_to:
+        #     return Response({"error": "You don't have permission to update this task."},
+        #                     status=status.HTTP_403_FORBIDDEN)
 
         serializer = TaskSerializer(task, data=request.data, partial=True, context={'request': request})
 
@@ -57,3 +56,25 @@ class TaskListView(APIView):
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, project_id=None):
+        if not project_id:
+            return Response({"error": "Missing task ID."}, status=400)
+
+        try:
+            task = Task.objects.get(id=project_id, is_deleted=False)
+        except Task.DoesNotExist:
+            return Response({"error": "Task not found."}, status=404)
+
+        # if task.assigned_to != request.user:
+        #     return Response({"error": "You don't have permission to delete this task."}, status=403)
+
+        task.is_deleted = True
+        task.save()
+
+        notify_ws(project_id=task.project.id, payload={
+            "type": "task_updated",
+            "task": TaskSerializer(task).data
+        })
+
+        return Response({"detail": "Task soft-deleted."}, status=204)

@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {Router, RouterLink, RouterOutlet} from '@angular/router';
 import {NgForOf, NgIf} from '@angular/common';
 import {AuthService} from './auth/services/auth.services';
-import {ProjectServices} from './services/projects/project.services.service';
+import {ProjectServices} from './services/projects/project.services';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 
 @Component({
