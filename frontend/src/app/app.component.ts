@@ -54,7 +54,7 @@ export class AppComponent {
 
     submit() {
         if (this.form.invalid) {
-            this.form.markAllAsTouched(); // важно!
+            this.form.markAllAsTouched();
             return;
         }
         const data = this.form.value;

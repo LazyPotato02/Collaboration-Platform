@@ -11,7 +11,7 @@ export class ProjectServices {
 
     constructor(private http: HttpClient) {}
 
-    // 📁 Проекти
+
     getProjects(): Observable<any[]> {
         return this.http.get<any[]>(this.apiUrlProjects);
     }

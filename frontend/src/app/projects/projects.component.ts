@@ -106,10 +106,8 @@ export class ProjectsComponent {
             const updatedTask = { ...task, status: newStatus };
 
             this.projectService.updateTask(updatedTask).subscribe(() => {
-                // Обнови локалния списък с новия статус
                 task.status = newStatus;
 
-                // Премести задачата между списъците
                 transferArrayItem(
                     event.previousContainer.data,
                     event.container.data,

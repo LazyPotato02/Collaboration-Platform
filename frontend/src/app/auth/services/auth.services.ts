@@ -2,13 +2,13 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, map, Observable, of, switchMap, throwError} from 'rxjs';
 
-// Define token structure
+
 interface AuthTokens {
     access: string;
     refresh: string;
 }
 
-// Define user structure
+
 interface User {
     id: number;
     email: string;
@@ -72,7 +72,7 @@ export class AuthService {
 
         return this.http.post<{ access: string }>(`${this.apiUrl}/api/token/refresh/`, {refresh}).pipe(
             switchMap(response => {
-                const user = this.getUser(); // Get stored user data
+                const user = this.getUser();
                 if (!user) {
                     return throwError(() => new Error('No user data available'));
                 }
