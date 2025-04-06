@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from project.models import ProjectMembership
 from task.models import Task
 from task.serializers import TaskSerializer
+from utils.notifications import notify_ws
 
 
 class TaskListView(APIView):
@@ -48,7 +49,11 @@ class TaskListView(APIView):
                 serializer.save(is_deleted=True)
             else:
                 serializer.save()
+            notify_ws(project_id=task.project.id, payload={
+                "type": "task_updated",
+                "task": serializer.data
+            })
+
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-

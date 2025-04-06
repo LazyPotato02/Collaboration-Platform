@@ -3,8 +3,8 @@
         <a routerLink="/" class="navbar-logo">TaskFlow</a>
     </div>
     <div class="navbar-right">
-        <a *ngIf="isLoggedIn" (click)="changeCreateProjectFormShow()">Create Project</a>
-        <a routerLink="/tasks" *ngIf="isLoggedIn">My Tasks</a>
+        <a *ngIf="isLoggedIn" (click)="changeCreateProjectFormShow()" style="cursor: pointer;" >Create Project</a>
+        <a routerLink="/tasks" *ngIf="isLoggedIn" style="cursor: pointer;">My Tasks</a>
         <a (click)="logout()" *ngIf="isLoggedIn" style="cursor: pointer;">Logout</a>
         <a routerLink="/login" *ngIf="!isLoggedIn">Login</a>
         <a routerLink="/register" *ngIf="!isLoggedIn">Register</a>
