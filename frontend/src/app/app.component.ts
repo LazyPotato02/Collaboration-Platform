@@ -15,7 +15,7 @@ export class AppComponent {
     projects: any[] = []
     isCreateProjectFormShow: boolean = false;
     form: FormGroup;
-
+    showMobileSidebar = false;
     get isLoggedIn(): boolean {
         return this.authService.isAuthenticated();
     }
@@ -70,7 +70,9 @@ export class AppComponent {
 
         })
     }
-
+    toggleSidebar() {
+        this.showMobileSidebar = !this.showMobileSidebar;
+    }
     logout(): void {
         this.authService.logout();
         this.router.navigate(['/login']);

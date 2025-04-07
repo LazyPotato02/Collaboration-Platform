@@ -216,3 +216,244 @@ body {
         transform: scale(1);
     }
 }
+/* ======= RESPONSIVE ADAPTATION ======= */
+
+@media (max-width: 1024px) {
+    .navbar {
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+
+    .navbar-right {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .navbar-right a {
+        margin-left: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    .app-layout {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .sidebar {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+        padding: 0.5rem;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .sidebar ul {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .main-content {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .navbar{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .popup-form {
+        width: 90%;
+        padding: 1.5rem;
+    }
+
+    .popup-form h2 {
+        font-size: 1.2rem;
+    }
+
+    .popup-form input {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+
+    .popup-form button {
+        font-size: 0.9rem;
+        padding: 0.6rem;
+    }
+
+    .popup-close {
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 0.75rem 1rem;
+    }
+
+    .navbar-left .navbar-logo {
+        font-size: 1.1rem;
+    }
+
+    .navbar-right a {
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+    }
+
+    .sidebar {
+        padding: 0.5rem 0.25rem;
+    }
+
+    .sidebar a {
+        font-size: 0.85rem;
+        padding: 0.3rem;
+    }
+
+    .popup-form {
+        padding: 1rem;
+        width: 95%;
+        gap: 0.5rem;
+    }
+
+    .popup-form h2 {
+        font-size: 1.1rem;
+    }
+
+    .popup-form input {
+        font-size: 0.85rem;
+    }
+
+    .popup-form button {
+        font-size: 0.85rem;
+    }
+
+    .popup-close {
+        font-size: 1.2rem;
+    }
+}
+.burger-button {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #4F46E5;
+    display: none;
+    cursor: pointer;
+}
+
+@media (max-width: 1200px) {
+    .burger-button {
+        display: block;
+    }
+
+    .sidebar {
+        display: none !important; /* скриваме оригиналния sidebar */
+    }
+
+    .mobile-sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.4);
+        backdrop-filter: blur(2px);
+        display: flex;
+        justify-content: flex-start;
+        z-index: 10000;
+    }
+
+    .mobile-sidebar {
+        width: 250px;
+        background: white;
+        padding: 1rem;
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        overflow-y: auto;
+    }
+
+    .mobile-sidebar h3 {
+        color: #4f46e5;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .mobile-sidebar ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .mobile-sidebar a {
+        text-decoration: none;
+        color: #374151;
+        font-weight: bold;
+        font-size: 0.95rem;
+    }
+    .close-mobile-sidebar {
+        margin-left: 55%;
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #ff0031;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .close-mobile-sidebar:hover {
+        color: #111827;
+    }
+    .mobile-sidebar a:hover {
+        color: #4f46e5;
+    }
+    .navbar-items {
+        display: none;
+    }
+
+    .burger-button {
+        display: block;
+        margin-left: auto;
+    }
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.burger-button {
+    font-size: 1.5rem;
+    background: transparent;
+    border: none;
+    color: #4f46e5;
+    cursor: pointer;
+    padding: 0;
+}
+
+.navbar-items {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.navbar-left,
+.navbar-right {
+    display: flex;
+    align-items: center;
+}

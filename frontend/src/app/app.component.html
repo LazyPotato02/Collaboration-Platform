@@ -3,42 +3,50 @@
         <a routerLink="/" class="navbar-logo">TaskFlow</a>
     </div>
     <div class="navbar-right">
-        <a *ngIf="isLoggedIn" (click)="changeCreateProjectFormShow()" style="cursor: pointer;" >Create Project</a>
-        <a routerLink="/tasks" *ngIf="isLoggedIn" style="cursor: pointer;">My Tasks</a>
-        <a (click)="logout()" *ngIf="isLoggedIn" style="cursor: pointer;">Logout</a>
-        <a routerLink="/login" *ngIf="!isLoggedIn">Login</a>
-        <a routerLink="/register" *ngIf="!isLoggedIn">Register</a>
+        <button class="burger-button" (click)="toggleSidebar()">☰</button>
+        <div class="navbar-items">
+            <a *ngIf="isLoggedIn" (click)="changeCreateProjectFormShow()" style="cursor: pointer;">Create Project</a>
+            <a routerLink="/tasks" *ngIf="isLoggedIn" style="cursor: pointer;">My Tasks</a>
+            <a (click)="logout()" *ngIf="isLoggedIn" style="cursor: pointer;">Logout</a>
+            <a routerLink="/login" *ngIf="!isLoggedIn">Login</a>
+            <a routerLink="/register" *ngIf="!isLoggedIn">Register</a>
+        </div>
     </div>
 </nav>
+
 <div class="app-layout">
     <div *ngIf="isCreateProjectFormShow">
         <div class="overlay">
             <form [formGroup]="form" (ngSubmit)="submit()" class="popup-form">
-<!--                <button type="button" class="popup-close" (click)="close()">×</button>-->
-
                 <h2>Create Project</h2>
-
                 <label>Name</label>
                 <input type="text" formControlName="name" />
                 <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="error">
                     <small *ngIf="form.get('name')?.errors?.['required']">Name is required.</small>
                     <small *ngIf="form.get('name')?.errors?.['minlength']">Minimum 5 characters.</small>
                 </div>
-
                 <label>Description</label>
                 <input type="text" formControlName="description" />
                 <div *ngIf="form.get('description')?.invalid && form.get('description')?.touched" class="error">
                     <small *ngIf="form.get('description')?.errors?.['required']">Description is required.</small>
                     <small *ngIf="form.get('description')?.errors?.['minlength']">Minimum 20 characters.</small>
                 </div>
-
                 <button type="submit">Submit</button>
                 <button type="button" (click)="close()">Cancel</button>
             </form>
         </div>
     </div>
 
-
+    <div class="mobile-sidebar-overlay" *ngIf="showMobileSidebar">
+        <div class="mobile-sidebar">
+            <h3 class="sidebar-title">Projects <button class="close-mobile-sidebar" (click)="toggleSidebar()">×</button></h3>
+            <ul class="project-list-scroll">
+                <li *ngFor="let project of projects">
+                    <a [routerLink]="['/projects', project.id]" (click)="toggleSidebar()">{{ project.name }}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 
     <aside class="sidebar" *ngIf="isLoggedIn">
         <h3 class="sidebar-title">Projects</h3>
@@ -46,7 +54,6 @@
             <li *ngFor="let project of projects">
                 <a [routerLink]="['/projects', project.id]">{{ project.name }}</a>
             </li>
-
         </ul>
     </aside>
 

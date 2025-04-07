@@ -17,36 +17,57 @@
     </form>
 </div>
 
+<div class="overlay" *ngIf="showForm">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="task-form">
+        <h3 *ngIf="!isEditMode">➕ New Task</h3>
+        <h3 *ngIf="isEditMode">✏️ Edit Task</h3>
 
-<div class="kanban-board">
+        <label>Title</label>
+        <input type="text" formControlName="title" />
+
+        <label>Description</label>
+        <input type="text" formControlName="description" />
+
+        <label>Due Date</label>
+        <input type="datetime-local" formControlName="due_date" />
+
+        <button type="submit">{{ isEditMode ? 'Update' : 'Create' }}</button>
+        <button type="button" (click)="resetForm()">Cancel</button>
+    </form>
+</div>
+
+<div class="kanban-container">
     <button class="add-task-button" (click)="openCreateForm()">+</button>
-    <div
-        class="kanban-column"
-        *ngFor="let status of statuses"
-        cdkDropList
-        [cdkDropListData]="getTasksByStatus(status)"
-        [cdkDropListConnectedTo]="dropListIds"
-        (cdkDropListDropped)="onTaskDrop($event, status)"
-        [id]="'list-' + status"
-    >
-        <h3>{{ getColumnTitle(status) }}</h3>
 
+    <div class="kanban-board">
         <div
-            class="kanban-task"
-            *ngFor="let task of getTasksByStatus(status)"
-            cdkDrag
-            [cdkDragData]="task"
-            [ngClass]="task.status"
+            class="kanban-column"
+            *ngFor="let status of statuses"
+            cdkDropList
+            [cdkDropListData]="getTasksByStatus(status)"
+            [cdkDropListConnectedTo]="dropListIds"
+            (cdkDropListDropped)="onTaskDrop($event, status)"
+            [id]="'list-' + status"
         >
-            <div class="task-content">
-                {{ task.title }}
-            </div>
-            <div class="task-actions">
-                <button (click)="editTask(task)">✏️</button>
-                <button (click)="deleteTask(task)">🗑️</button>
+            <h3>{{ getColumnTitle(status) }}</h3>
+
+            <div
+                class="kanban-task"
+                *ngFor="let task of getTasksByStatus(status)"
+                cdkDrag
+                [cdkDragData]="task"
+                [ngClass]="task.status"
+            >
+                <div class="task-content">{{ task.title }}</div>
+                <div class="task-actions">
+                    <button (click)="editTask(task)">✏️</button>
+                    <button (click)="deleteTask(task)">🗑️</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+
 
 
