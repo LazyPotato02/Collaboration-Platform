@@ -25,11 +25,12 @@ export class ProjectsComponent {
     id: number | undefined;
     projectTasks: any[] = [];
     private routeSub!: Subscription;
-    statuses = ['planning', 'to_do', 'in_progress', 'done', 'finished'];
+    statuses = ['planning', 'to_do', 'in_progress', 'done'];
     dropListIds = this.statuses.map(status => `list-${status}`);
     form: FormGroup;
     isEditMode = false;
     editedTaskId: number | null = null;
+    showForm = false;
 
     constructor(private route: ActivatedRoute, private projectService: ProjectServices, private wsService: WebSocketService, private fb: FormBuilder,) {
         this.form = this.fb.group({
@@ -58,7 +59,11 @@ export class ProjectsComponent {
             });
         });
     }
-
+    openCreateForm() {
+        this.isEditMode = false;
+        this.form.reset();
+        this.showForm = true;
+    }
     submit() {
         if (this.form.invalid) {
             this.form.markAllAsTouched();
@@ -69,7 +74,7 @@ export class ProjectsComponent {
 
         if (this.isEditMode) {
             this.projectService.updateTask(data).subscribe(() => {
-                this.loadProject(this.id); // презареди задачите
+                this.loadProject(this.id);
                 this.resetForm();
             });
         } else {
@@ -85,14 +90,10 @@ export class ProjectsComponent {
         this.isEditMode = true;
         this.editedTaskId = task.id;
 
-        const formattedDueDate = task.due_date
-            ? task.due_date.slice(0, 16) 
-            : '';
+        const formattedDueDate = task.due_date?.slice(0, 16) || '';
+        this.form.patchValue({ ...task, due_date: formattedDueDate });
 
-        this.form.patchValue({
-            ...task,
-            due_date: formattedDueDate
-        });
+        this.showForm = true;
     }
 
     deleteTask(task: any) {
@@ -103,8 +104,9 @@ export class ProjectsComponent {
 
     resetForm() {
         this.form.reset();
-        this.isEditMode = false;
         this.editedTaskId = null;
+        this.isEditMode = false;
+        this.showForm = false;
     }
 
     onTaskDrop(event: CdkDragDrop<any[]>, newStatus: string) {
