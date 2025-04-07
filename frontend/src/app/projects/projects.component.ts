@@ -84,7 +84,15 @@ export class ProjectsComponent {
     editTask(task: any) {
         this.isEditMode = true;
         this.editedTaskId = task.id;
-        this.form.patchValue(task);
+
+        const formattedDueDate = task.due_date
+            ? task.due_date.slice(0, 16) 
+            : '';
+
+        this.form.patchValue({
+            ...task,
+            due_date: formattedDueDate
+        });
     }
 
     deleteTask(task: any) {
