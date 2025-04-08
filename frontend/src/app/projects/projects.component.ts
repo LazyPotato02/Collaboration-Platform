@@ -35,6 +35,10 @@ export class ProjectsComponent {
     showForm = false;
     showConfirmDelete = false;
     taskToDelete: any = null;
+    selectedTask: any = null;
+    showInfoPopup = false;
+
+
     constructor(private route: ActivatedRoute, private projectService: ProjectServices, private wsService: WebSocketService, private fb: FormBuilder, private snackBar: MatSnackBar) {
         this.form = this.fb.group({
             title: ['', [Validators.required, Validators.minLength(3)]],
@@ -115,11 +119,33 @@ export class ProjectsComponent {
             this.projectService.deleteTask(this.taskToDelete.id).subscribe(() => {
                 this.projectTasks = this.projectTasks.filter(t => t.id !== this.taskToDelete.id);
                 this.closeConfirm();
-                
+
             });
         }
     }
 
+    taskInformation(task: any){
+        this.selectedTask = task;
+        const statusTitles: {[key: string]: string} = {
+            planning: 'Planning',
+            to_do: 'To Do',
+            in_progress: 'In Progress',
+            done: 'Done',
+            finished: 'Finished'
+        };
+
+        this.selectedTask = {
+            ...task,
+            displayStatus: statusTitles[task.status] || task.status
+        };
+        console.log(this.selectedTask)
+
+        this.showInfoPopup = true;
+    }
+    closeTaskInfo() {
+        this.selectedTask = null;
+        this.showInfoPopup = false;
+    }
     resetForm() {
         this.form.reset();
         this.editedTaskId = null;

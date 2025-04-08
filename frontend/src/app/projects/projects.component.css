@@ -53,11 +53,11 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.kanban-task.planning { border-color: #a3a3a3; }
-.kanban-task.to_do { border-color: #f59e0b; }
-.kanban-task.in_progress { border-color: #3b82f6; }
-.kanban-task.done { border-color: #10b981; }
-.kanban-task.finished { border-color: #6b7280; }
+.kanban-task.planning { border-color: #a3a3a3; text-align: center;}
+.kanban-task.to_do { border-color: #f59e0b;text-align: center; }
+.kanban-task.in_progress { border-color: #3b82f6;text-align: center; }
+.kanban-task.done { border-color: #10b981;text-align: center; }
+.kanban-task.finished { border-color: #6b7280;text-align: center; }
 
 .cdk-drag-preview,
 .cdk-drag-placeholder {
@@ -258,4 +258,13 @@
 
 .delete-btn:hover {
     background-color: #dc2626;
+}
+.readonly-form .readonly-field {
+    background: #f9fafb;
+    border: 1px solid #d1d5db;
+    padding: 0.6rem;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    color: #374151;
+    margin-bottom: 0.5rem;
 }

@@ -4,13 +4,13 @@
         <h3 *ngIf="isEditMode">✏️ Edit Task</h3>
 
         <label>Title</label>
-        <input type="text" formControlName="title" />
+        <input type="text" formControlName="title"/>
 
         <label>Description</label>
-        <input type="text" formControlName="description" />
+        <input type="text" formControlName="description"/>
 
         <label>Due Date</label>
-        <input type="datetime-local" formControlName="due_date" />
+        <input type="datetime-local" formControlName="due_date"/>
 
         <button type="submit">{{ isEditMode ? 'Update' : 'Create' }}</button>
         <button type="button" (click)="resetForm()">Cancel</button>
@@ -23,13 +23,13 @@
         <h3 *ngIf="isEditMode">✏️ Edit Task</h3>
 
         <label>Title</label>
-        <input type="text" formControlName="title" />
+        <input type="text" formControlName="title"/>
 
         <label>Description</label>
-        <input type="text" formControlName="description" />
+        <input type="text" formControlName="description"/>
 
         <label>Due Date</label>
-        <input type="datetime-local" formControlName="due_date" />
+        <input type="datetime-local" formControlName="due_date"/>
 
         <button type="submit">{{ isEditMode ? 'Update' : 'Create' }}</button>
         <button type="button" (click)="resetForm()">Cancel</button>
@@ -59,7 +59,10 @@
                 [ngClass]="task.status"
             >
                 <div class="task-content">{{ task.title }}</div>
+                <div class="task-content">{{ task.due_date | date }}</div>
+
                 <div class="task-actions">
+                    <button (click)="taskInformation(task)">❗</button>
                     <button (click)="editTask(task)">✏️</button>
                     <button (click)="openDeleteConfirm(task)">🗑️</button>
                 </div>
@@ -77,6 +80,27 @@
     </div>
 </div>
 
+<div class="overlay" *ngIf="showInfoPopup">
+    <div class="task-form readonly-form">
+        <h3>📋 Task Information</h3>
+
+        <label>Title</label>
+        <div class="readonly-field">{{ selectedTask?.title }}</div>
+
+        <label>Description</label>
+        <div class="readonly-field">{{ selectedTask?.description || '—' }}</div>
+
+        <label>Status</label>
+        <div class="readonly-field">{{ selectedTask?.displayStatus }}</div>
+
+        <label>Due Date</label>
+        <div class="readonly-field">
+            {{ selectedTask?.due_date ? (selectedTask?.due_date | date: 'medium') : '—' }}
+        </div>
+
+        <button type="button" (click)="closeTaskInfo()">Close</button>
+    </div>
+</div>
 
 
 
