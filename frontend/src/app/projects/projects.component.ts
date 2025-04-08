@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Observable, Subscription} from 'rxjs';
 import {ProjectServices} from '../services/projects/project.services';
@@ -6,6 +6,7 @@ import {CommonModule, NgClass, NgForOf} from '@angular/common';
 import {WebSocketService} from '../services/websocket/websocket.service';
 import {CdkDrag, CdkDragDrop, CdkDropList, DragDropModule, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 
 @Component({
     selector: 'app-projects',
@@ -17,9 +18,10 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
         NgClass,
         CommonModule,
         ReactiveFormsModule,
+        MatSnackBarModule
     ],
     templateUrl: './projects.component.html',
-    styleUrl: './projects.component.css'
+    styleUrl: './projects.component.css',
 })
 export class ProjectsComponent {
     id: number | undefined;
@@ -31,8 +33,9 @@ export class ProjectsComponent {
     isEditMode = false;
     editedTaskId: number | null = null;
     showForm = false;
-
-    constructor(private route: ActivatedRoute, private projectService: ProjectServices, private wsService: WebSocketService, private fb: FormBuilder,) {
+    showConfirmDelete = false;
+    taskToDelete: any = null;
+    constructor(private route: ActivatedRoute, private projectService: ProjectServices, private wsService: WebSocketService, private fb: FormBuilder, private snackBar: MatSnackBar) {
         this.form = this.fb.group({
             title: ['', [Validators.required, Validators.minLength(3)]],
             description: [''],
@@ -59,11 +62,13 @@ export class ProjectsComponent {
             });
         });
     }
+
     openCreateForm() {
         this.isEditMode = false;
         this.form.reset();
         this.showForm = true;
     }
+
     submit() {
         if (this.form.invalid) {
             this.form.markAllAsTouched();
@@ -91,15 +96,28 @@ export class ProjectsComponent {
         this.editedTaskId = task.id;
 
         const formattedDueDate = task.due_date?.slice(0, 16) || '';
-        this.form.patchValue({ ...task, due_date: formattedDueDate });
+        this.form.patchValue({...task, due_date: formattedDueDate});
 
         this.showForm = true;
     }
 
-    deleteTask(task: any) {
-        this.projectService.deleteTask(task.id).subscribe(() => {
-            this.projectTasks = this.projectTasks.filter(t => t.id !== task.id);
-        });
+    openDeleteConfirm(task: any) {
+        this.taskToDelete = task;
+        this.showConfirmDelete = true;
+    }
+    closeConfirm() {
+        this.showConfirmDelete = false;
+        this.taskToDelete = null;
+    }
+    confirmDelete() {
+        if (this.taskToDelete) {
+            console.log(this.taskToDelete.id);
+            this.projectService.deleteTask(this.taskToDelete.id).subscribe(() => {
+                this.projectTasks = this.projectTasks.filter(t => t.id !== this.taskToDelete.id);
+                this.closeConfirm();
+                
+            });
+        }
     }
 
     resetForm() {
@@ -113,7 +131,7 @@ export class ProjectsComponent {
         const task = event.item.data;
 
         if (task.status !== newStatus) {
-            const updatedTask = { ...task, status: newStatus };
+            const updatedTask = {...task, status: newStatus};
 
             this.projectService.updateTask(updatedTask).subscribe(() => {
                 task.status = newStatus;
