@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -7,6 +8,7 @@ from project.models import ProjectMembership, Project
 from project.serializers import ProjectSerializer
 from task.models import Task
 from task.serializers import TaskSerializer
+from user.serializers import CustomUserSerializer
 
 
 class ProjectApiView(APIView):
@@ -56,3 +58,19 @@ class ProjectApiView(APIView):
         project.delete()
         return Response({"detail": "Project deleted."}, status=204)
 
+
+class ProjectMembershipView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, project_id=None):
+        project = get_object_or_404(Project, id=project_id)
+
+        if not project.members.filter(id=request.user.id).exists():
+            return Response(
+                {"detail": "Access denied to this project."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        users = project.members.all()
+        serializer = CustomUserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

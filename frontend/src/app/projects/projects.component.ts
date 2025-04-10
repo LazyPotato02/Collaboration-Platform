@@ -138,7 +138,6 @@ export class ProjectsComponent {
             ...task,
             displayStatus: statusTitles[task.status] || task.status
         };
-        console.log(this.selectedTask)
 
         this.showInfoPopup = true;
     }

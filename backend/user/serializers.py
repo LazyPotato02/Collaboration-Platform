@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework.serializers import ModelSerializer
-from .models import CustomUser as User
+from .models import CustomUser as User, CustomUser
+
 
 class RegisterSerializer(ModelSerializer):
     class Meta:
@@ -16,3 +17,8 @@ class RegisterSerializer(ModelSerializer):
             last_name=validated_data['last_name']
         )
         return user
+
+class CustomUserSerializer(ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id','email','first_name','last_name']

@@ -1,16 +1,19 @@
 from django.db.migrations import serializer
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from project.models import ProjectMembership
+
 from task.models import Task
 from task.serializers import TaskSerializer
+
 from utils.notifications import notify_ws
 
 
 class TaskListView(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request, project_id=None):
@@ -78,3 +81,6 @@ class TaskListView(APIView):
         })
 
         return Response({"detail": "Task soft-deleted."}, status=204)
+
+
+
