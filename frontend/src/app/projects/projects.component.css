@@ -20,8 +20,28 @@
     min-width: 280px;
     max-width: 100%;
 }
+.project-users-display {
+    position: absolute;
+    top: 0.5rem;
+    right: 4.5rem; /* оставя място за "+" бутона */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    z-index: 5;
+    max-width: 400px;
+    justify-content: flex-end;
+}
 
-@media (min-width: 1025px) {
+.user-chip {
+    background-color: #e0e7ff; /* светло синьо */
+    color: #1e3a8a; /* тъмно син текст */
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+@media (min-width: 1675px) {
     .kanban-board {
         flex-wrap: nowrap;
         overflow-x: auto;

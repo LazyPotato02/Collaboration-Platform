@@ -37,7 +37,7 @@ export class ProjectsComponent {
     taskToDelete: any = null;
     selectedTask: any = null;
     showInfoPopup = false;
-
+    projectUsers: any[] = []
 
     constructor(private route: ActivatedRoute, private projectService: ProjectServices, private wsService: WebSocketService, private fb: FormBuilder, private snackBar: MatSnackBar) {
         this.form = this.fb.group({
@@ -64,6 +64,9 @@ export class ProjectsComponent {
                     }
                 }
             });
+            this.projectUsers = []
+            this.getProjectMembers()
+
         });
     }
 
@@ -109,10 +112,12 @@ export class ProjectsComponent {
         this.taskToDelete = task;
         this.showConfirmDelete = true;
     }
+
     closeConfirm() {
         this.showConfirmDelete = false;
         this.taskToDelete = null;
     }
+
     confirmDelete() {
         if (this.taskToDelete) {
             console.log(this.taskToDelete.id);
@@ -124,9 +129,9 @@ export class ProjectsComponent {
         }
     }
 
-    taskInformation(task: any){
+    taskInformation(task: any) {
         this.selectedTask = task;
-        const statusTitles: {[key: string]: string} = {
+        const statusTitles: { [key: string]: string } = {
             planning: 'Planning',
             to_do: 'To Do',
             in_progress: 'In Progress',
@@ -141,10 +146,12 @@ export class ProjectsComponent {
 
         this.showInfoPopup = true;
     }
+
     closeTaskInfo() {
         this.selectedTask = null;
         this.showInfoPopup = false;
     }
+
     resetForm() {
         this.form.reset();
         this.editedTaskId = null;
@@ -190,6 +197,16 @@ export class ProjectsComponent {
 
     getTasksByStatus(status: string) {
         return this.projectTasks.filter(task => task.status === status);
+    }
+
+    getProjectMembers() {
+        this.projectService.getProjectUsers(this.id).subscribe(users => {
+                for (const user of users) {
+                    this.projectUsers.push(user);
+                }
+            console.log(this.projectUsers);
+            }
+        )
     }
 
     ngOnDestroy(): void {
