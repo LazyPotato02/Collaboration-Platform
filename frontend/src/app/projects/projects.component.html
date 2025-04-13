@@ -74,7 +74,7 @@
 </div>
 <div class="overlay" *ngIf="showCommentPopup">
     <div class="comment-modal">
-        <div class="comment-list">
+        <div class="comment-list" #commentList>
             <div *ngFor="let comment of selectedTask?.comments" class="comment-item">
                 <strong>{{ comment.user.email || 'User' }}:</strong> {{ comment.content }}
             </div>

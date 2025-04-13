@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component, ElementRef, ViewChild, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Observable, Subscription} from 'rxjs';
 import {ProjectServices} from '../services/projects/project.services';
@@ -25,6 +25,7 @@ import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
     styleUrl: './projects.component.css',
 })
 export class ProjectsComponent {
+    @ViewChild('commentList') commentListRef!: ElementRef;
     id: number | undefined;
     projectTasks: any[] = [];
     private routeSub!: Subscription;
@@ -76,6 +77,11 @@ export class ProjectsComponent {
                     if (task) {
                         task.comments = task.comments || [];
                         task.comments.push(message.comment);
+
+                        if (this.selectedTask?.id === task.id) {
+                            this.scrollToBottom();
+                        }
+
                         this.snackBar.open(`💬 New comment on "${task.title}"`, 'OK', {
                             duration: 3000,
                             horizontalPosition: 'right',
@@ -259,15 +265,16 @@ export class ProjectsComponent {
                         comment.user = JSON.parse(comment.user);
                     } catch (e) {
                         console.warn('⚠️ Неуспешен JSON.parse на user:', comment.user);
-                        comment.user = { email: 'Unknown' };
+                        comment.user = {email: 'Unknown'};
                     }
                 }
                 return comment;
             });
 
-            task.newComment = ''; // reset за всеки случай
+            task.newComment = '';
             this.selectedTask = task;
             this.showCommentPopup = true;
+            this.scrollToBottom();
         }, (error) => {
             console.error('❌ Грешка при зареждане на коментари:', error);
         });
@@ -280,10 +287,7 @@ export class ProjectsComponent {
     }
 
 
-    addComment(task
-               :
-               any
-    ) {
+    addComment(task: any) {
         const content = task.newComment?.trim();
         if (!content) return;
 
@@ -297,6 +301,16 @@ export class ProjectsComponent {
                 comment: newComment
             });
         });
+    }
+
+    scrollToBottom() {
+        try {
+            setTimeout(() => {
+                this.commentListRef.nativeElement.scrollTop = this.commentListRef.nativeElement.scrollHeight;
+            }, 50);
+        } catch (err) {
+            console.warn('⚠️ Error while scrolling', err);
+        }
     }
 
     ngOnDestroy()
