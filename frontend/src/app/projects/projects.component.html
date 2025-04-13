@@ -66,9 +66,9 @@
                 <div class="task-content">{{ task.due_date | date }}</div>
 
                 <div class="task-actions">
-                    <button (click)="taskInformation(task)">❗</button>
-                    <button (click)="editTask(task)">✏️</button>
-                    <button (click)="openDeleteConfirm(task)">🗑️</button>
+                    <button (click)="taskInformation(task)" >❗</button>
+                    <button (click)="editTask(task)" *ngIf="isUserAdmin">✏️</button>
+                    <button (click)="openDeleteConfirm(task)" *ngIf="isUserAdmin">🗑️</button>
                 </div>
             </div>
         </div>
@@ -79,8 +79,8 @@
     <div class="confirm-modal">
         <h3>Are you sure you want to delete this task?</h3>
         <div class="confirm-buttons">
-            <button class="cancel-btn" (click)="closeConfirm()">Cancel</button>
             <button class="delete-btn" (click)="confirmDelete()">Delete</button>
+            <button class="cancel-btn" (click)="closeConfirm()">Cancel</button>
         </div>
     </div>
 </div>

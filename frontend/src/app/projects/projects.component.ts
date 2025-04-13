@@ -38,6 +38,7 @@ export class ProjectsComponent {
     selectedTask: any = null;
     showInfoPopup = false;
     projectUsers: any[] = []
+    isUserAdmin: any[] | undefined;
 
     constructor(private route: ActivatedRoute, private projectService: ProjectServices, private wsService: WebSocketService, private fb: FormBuilder, private snackBar: MatSnackBar) {
         this.form = this.fb.group({
@@ -53,6 +54,8 @@ export class ProjectsComponent {
             this.id = +params['id'];
             this.loadProject(this.id);
 
+            this.checkIsUserAdmin()
+
             this.wsService.connect(this.id, (message) => {
                 if (message.type === 'task_updated') {
                     const updated = message.task;
@@ -66,7 +69,6 @@ export class ProjectsComponent {
             });
             this.projectUsers = []
             this.getProjectMembers()
-
         });
     }
 
@@ -97,6 +99,16 @@ export class ProjectsComponent {
         }
     }
 
+    checkIsUserAdmin() {
+        this.projectService.getProjectIsAdmin(this.id).subscribe({
+            next: isAdmin => {
+                this.isUserAdmin = isAdmin;
+            },
+            error: error => {
+                console.log('User is Not Admin');
+            }
+        })
+    }
 
     editTask(task: any) {
         this.isEditMode = true;
@@ -204,7 +216,7 @@ export class ProjectsComponent {
                 for (const user of users) {
                     this.projectUsers.push(user);
                 }
-            console.log(this.projectUsers);
+                console.log(this.projectUsers);
             }
         )
     }

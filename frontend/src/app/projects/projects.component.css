@@ -23,7 +23,7 @@
 .project-users-display {
     position: absolute;
     top: 0.5rem;
-    right: 4.5rem; /* оставя място за "+" бутона */
+    right: 4.5rem;
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
@@ -33,8 +33,8 @@
 }
 
 .user-chip {
-    background-color: #e0e7ff; /* светло синьо */
-    color: #1e3a8a; /* тъмно син текст */
+    background-color: #e0e7ff;
+    color: #1e3a8a;
     padding: 0.3rem 0.6rem;
     border-radius: 999px;
     font-size: 0.85rem;

@@ -59,6 +59,16 @@ class ProjectApiView(APIView):
         return Response({"detail": "Project deleted."}, status=204)
 
 
+class CheckIsUserAdmin(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, project_id):
+        is_admin = ProjectMembership.objects.filter(user=request.user, project_id=project_id,role='admin').first()
+        if is_admin :
+            return Response({"is_admin": True}, status=status.HTTP_200_OK)
+        return Response({"is_admin": False}, status=status.HTTP_403_FORBIDDEN)
+
+
 class ProjectMembershipView(APIView):
     permission_classes = [IsAuthenticated]
 

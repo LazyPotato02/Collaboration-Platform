@@ -28,6 +28,9 @@ export class ProjectServices {
     getProjectTasks(projectId: number | undefined) {
         return this.http.get<any[]>(this.apiUrlTasks + `/project/${projectId}`)
     }
+    getProjectIsAdmin(projectId: number | undefined) {
+        return this.http.get<any[]>(`${this.apiUrlProjects}/isAdmin/${projectId}`);
+    }
 
     createTask(data: any): Observable<any> {
         return this.http.post<any>(`${this.apiUrlTasks}/`, data, {withCredentials: true});
