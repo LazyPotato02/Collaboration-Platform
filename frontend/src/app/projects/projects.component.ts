@@ -42,6 +42,7 @@ export class ProjectsComponent {
     isUserAdmin: any[] | undefined;
     showCommentPopup = false;
     user: any;
+
     constructor(private route: ActivatedRoute, private projectService: ProjectServices, private wsService: WebSocketService, private fb: FormBuilder, private snackBar: MatSnackBar) {
         this.form = this.fb.group({
             title: ['', [Validators.required, Validators.minLength(3)]],
@@ -74,6 +75,14 @@ export class ProjectsComponent {
                     const task = this.projectTasks.find(t => t.id === message.task_id);
                     if (task) {
                         task.comments = task.comments || [];
+                        task.comments.push(message.comment);
+                        this.snackBar.open(`💬 New comment on "${task.title}"`, 'OK', {
+                            duration: 3000,
+                            horizontalPosition: 'right',
+                            verticalPosition: 'top',
+                            panelClass: ['custom-snackbar']
+                        });
+
                     }
                 }
             });
@@ -213,8 +222,13 @@ export class ProjectsComponent {
 
     loadProject(id: number | undefined) {
         this.projectService.getProjectTasks(id).subscribe(tasks => {
-            this.projectTasks = tasks
-        })
+            this.projectTasks = tasks.map(task => ({
+                ...task,
+                comments: task.comments ?? [],
+                newComment: ''
+            }));
+            console.log(this.projectTasks)
+        });
     }
 
     getTasksByStatus(status: string) {
@@ -233,17 +247,30 @@ export class ProjectsComponent {
 
 
     toggleComments(task: any) {
-        if (!task.comments) {
-            this.projectService.getComments(task.id).subscribe((comments) => {
-                task.comments = comments;
-                this.selectedTask = task;
-                this.showCommentPopup = true;
+        this.projectService.getComments(task.id).subscribe((comments) => {
+            if (!Array.isArray(comments)) {
+                console.warn('⚠️ Очаквах масив, но получих:', comments);
+                return;
+            }
 
+            task.comments = comments.map(comment => {
+                if (typeof comment.user === 'string') {
+                    try {
+                        comment.user = JSON.parse(comment.user);
+                    } catch (e) {
+                        console.warn('⚠️ Неуспешен JSON.parse на user:', comment.user);
+                        comment.user = { email: 'Unknown' };
+                    }
+                }
+                return comment;
             });
-        } else {
+
+            task.newComment = ''; // reset за всеки случай
             this.selectedTask = task;
             this.showCommentPopup = true;
-        }
+        }, (error) => {
+            console.error('❌ Грешка при зареждане на коментари:', error);
+        });
 
     }
 
@@ -253,17 +280,17 @@ export class ProjectsComponent {
     }
 
 
-    addComment(task: any) {
+    addComment(task
+               :
+               any
+    ) {
         const content = task.newComment?.trim();
         if (!content) return;
 
-        const data = { task: task.id, content };
+        const data = {task: task.id, content};
 
         this.projectService.createComment(data).subscribe(newComment => {
-            task.comments.push(newComment);
             task.newComment = '';
-
-            // 👇 Изпрати съобщение през WebSocket
             this.wsService.send({
                 type: 'new_comment',
                 task_id: task.id,
@@ -272,7 +299,9 @@ export class ProjectsComponent {
         });
     }
 
-    ngOnDestroy(): void {
+    ngOnDestroy()
+        :
+        void {
         this.routeSub.unsubscribe();
         this.wsService.disconnect();
     }

@@ -1,0 +1,66 @@
+.mat-mdc-snack-bar-container {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    border-radius: 20px !important;;
+}
+
+.mdc-snackbar__surface {
+    background-color: #4f46e5 !important;
+    color: white !important;
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 320px;
+    max-width: 480px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+.mat-mdc-button-touch-target{
+    background-color: #4f46e5 !important;
+
+}
+.mat-mdc-snack-bar-action .mdc-button__label {
+    background-color: #4f46e5 !important;
+    color: white !important;
+    font-weight: 600;
+    font-size: 16px;
+}
+.mat-mdc-snack-bar-action .mdc-button__label:hover{
+    color: #21f204 !important;
+
+}
+.mat-mdc-snack-bar-action {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 6px 12px;
+    margin-left: 16px;
+}
+
+.mat-mdc-snack-bar-action:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.mat-mdc-snack-bar-label {
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.mdc-snackbar__action button {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.mdc-snackbar__action button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+.custom-snackbar .mdc-snackbar__surface {
+    background-color: #4f46e5 !important;
+    border-radius: 20px !important;;
+}
