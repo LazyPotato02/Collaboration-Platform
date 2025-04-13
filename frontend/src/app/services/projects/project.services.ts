@@ -8,6 +8,7 @@ import {Observable} from 'rxjs';
 export class ProjectServices {
     apiUrlProjects: string = 'http://localhost:8000/project';
     apiUrlTasks: string = 'http://localhost:8000/task';
+    apiUrlComment: string = 'http://localhost:8000/comment';
 
     constructor(private http: HttpClient) {
     }
@@ -31,7 +32,13 @@ export class ProjectServices {
     getProjectIsAdmin(projectId: number | undefined) {
         return this.http.get<any[]>(`${this.apiUrlProjects}/isAdmin/${projectId}`);
     }
+    getComments(taskId: number) {
+        return this.http.get(`${this.apiUrlComment}/${taskId}`);
+    }
 
+    createComment(data: any) {
+        return this.http.post(`${this.apiUrlComment}/`, data);
+    }
     createTask(data: any): Observable<any> {
         return this.http.post<any>(`${this.apiUrlTasks}/`, data, {withCredentials: true});
     }

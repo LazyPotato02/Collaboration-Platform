@@ -5,7 +5,7 @@ import {ProjectServices} from '../services/projects/project.services';
 import {CommonModule, NgClass, NgForOf} from '@angular/common';
 import {WebSocketService} from '../services/websocket/websocket.service';
 import {CdkDrag, CdkDragDrop, CdkDropList, DragDropModule, transferArrayItem} from '@angular/cdk/drag-drop';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 
 @Component({
@@ -18,7 +18,8 @@ import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
         NgClass,
         CommonModule,
         ReactiveFormsModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        FormsModule
     ],
     templateUrl: './projects.component.html',
     styleUrl: './projects.component.css',
@@ -39,7 +40,8 @@ export class ProjectsComponent {
     showInfoPopup = false;
     projectUsers: any[] = []
     isUserAdmin: any[] | undefined;
-
+    showCommentPopup = false;
+    user: any;
     constructor(private route: ActivatedRoute, private projectService: ProjectServices, private wsService: WebSocketService, private fb: FormBuilder, private snackBar: MatSnackBar) {
         this.form = this.fb.group({
             title: ['', [Validators.required, Validators.minLength(3)]],
@@ -50,6 +52,8 @@ export class ProjectsComponent {
     }
 
     ngOnInit() {
+        const userStr = localStorage.getItem('user');
+        this.user = userStr ? JSON.parse(userStr) : null;
         this.routeSub = this.route.params.subscribe(params => {
             this.id = +params['id'];
             this.loadProject(this.id);
@@ -64,6 +68,12 @@ export class ProjectsComponent {
                         this.projectTasks[index] = updated;
                     } else {
                         this.projectTasks.push(updated);
+                    }
+                }
+                if (message.type === 'new_comment') {
+                    const task = this.projectTasks.find(t => t.id === message.task_id);
+                    if (task) {
+                        task.comments = task.comments || [];
                     }
                 }
             });
@@ -219,6 +229,47 @@ export class ProjectsComponent {
                 console.log(this.projectUsers);
             }
         )
+    }
+
+
+    toggleComments(task: any) {
+        if (!task.comments) {
+            this.projectService.getComments(task.id).subscribe((comments) => {
+                task.comments = comments;
+                this.selectedTask = task;
+                this.showCommentPopup = true;
+
+            });
+        } else {
+            this.selectedTask = task;
+            this.showCommentPopup = true;
+        }
+
+    }
+
+    closeCommentPopup() {
+        this.selectedTask = null;
+        this.showCommentPopup = false;
+    }
+
+
+    addComment(task: any) {
+        const content = task.newComment?.trim();
+        if (!content) return;
+
+        const data = { task: task.id, content };
+
+        this.projectService.createComment(data).subscribe(newComment => {
+            task.comments.push(newComment);
+            task.newComment = '';
+
+            // 👇 Изпрати съобщение през WebSocket
+            this.wsService.send({
+                type: 'new_comment',
+                task_id: task.id,
+                comment: newComment
+            });
+        });
     }
 
     ngOnDestroy(): void {

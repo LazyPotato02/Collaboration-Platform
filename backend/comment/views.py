@@ -22,6 +22,7 @@ class CommendApiView(APIView):
 
     def post(self, request):
         serializer = CommentSerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

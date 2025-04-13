@@ -26,10 +26,16 @@ export class WebSocketService {
             console.error('WebSocket error:', err);
         };
     }
-
+    send(data: any): void {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify(data));
+        }
+    }
     disconnect(): void {
         if (this.socket) {
             this.socket.close();
         }
     }
+
+
 }

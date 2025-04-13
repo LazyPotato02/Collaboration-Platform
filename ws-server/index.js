@@ -29,6 +29,28 @@ wss.on('connection', (ws, req) => {
 
     console.log(`Client connected to project ${projectId}`);
 
+    ws.on('message', (message) => {
+        try {
+            const data = JSON.parse(message);
+
+            if (data.type === 'new_comment') {
+                const payload = JSON.stringify({
+                    type: 'new_comment',
+                    task_id: data.task_id,
+                    comment: data.comment
+                });
+
+                clients[projectId].forEach(client => {
+                    if (client.readyState === WebSocket.OPEN) {
+                        client.send(payload);
+                    }
+                });
+            }
+        } catch (err) {
+            console.error('Failed to parse message:', err);
+        }
+    });
+
     ws.on('close', () => {
         clients[projectId] = clients[projectId].filter(client => client !== ws);
         console.log(`Client disconnected from project ${projectId}`);
