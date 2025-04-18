@@ -37,10 +37,14 @@
 </div>
 
 <div class="kanban-container">
+
     <button class="add-task-button" (click)="openCreateForm()">+</button>
     <div class="project-users-display">
     </div>
     <div class="kanban-board">
+        <div *ngIf="isLoadingTasks" class="loading-indicator">
+            <span class="spinner"></span> Loading tasks...
+        </div>
         <div
             class="kanban-column"
             *ngFor="let status of statuses"
@@ -72,8 +76,13 @@
         </div>
     </div>
 </div>
+<div *ngIf="isLoadingComments" class="loading-indicator-sm">
+    <span class="spinner-sm"></span> Loading comments...
+</div>
 <div class="overlay" *ngIf="showCommentPopup">
+
     <div class="comment-modal">
+
         <div class="comment-list" #commentList>
             <div *ngFor="let comment of selectedTask?.comments" class="comment-item">
                 <strong>{{ comment.user.email || 'User' }}:</strong> {{ comment.content }}

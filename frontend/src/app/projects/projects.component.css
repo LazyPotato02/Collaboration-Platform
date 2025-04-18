@@ -349,3 +349,33 @@
 .comment-form button:hover {
     background: #4338ca;
 }
+.loading-indicator,
+.loading-indicator-sm {
+    text-align: center;
+    margin: 1rem 0;
+    font-weight: 500;
+    color: #4f46e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.spinner, .spinner-sm {
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #4f46e5;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 0.6s linear infinite;
+}
+
+.spinner-sm {
+    width: 16px;
+    height: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

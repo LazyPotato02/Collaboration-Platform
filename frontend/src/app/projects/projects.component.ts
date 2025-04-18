@@ -46,6 +46,10 @@ export class ProjectsComponent {
     showCommentPopup = false;
     user!: UserInterface;
 
+    isLoadingTasks = false;
+    isLoadingComments = false;
+    isSubmitting = false;
+
     constructor(private route: ActivatedRoute, private projectService: ProjectServices, private wsService: WebSocketService, private fb: FormBuilder, private snackBar: MatSnackBar) {
         this.form = this.fb.group({
             title: ['', [Validators.required, Validators.minLength(3)]],
@@ -111,20 +115,22 @@ export class ProjectsComponent {
             return;
         }
 
-        const data = {...this.form.value, id: this.editedTaskId, project: this.id};
+        this.isSubmitting = true;
+        const data = { ...this.form.value, id: this.editedTaskId, project: this.id };
+
+        const handler = () => {
+            this.loadProject(this.id);
+            this.resetForm();
+            this.isSubmitting = false;
+        };
 
         if (this.isEditMode) {
-            this.projectService.updateTask(data).subscribe(() => {
-                this.loadProject(this.id);
-                this.resetForm();
-            });
+            this.projectService.updateTask(data).subscribe(handler, () => this.isSubmitting = false);
         } else {
-            this.projectService.createTask(data).subscribe(() => {
-                this.loadProject(this.id);
-                this.resetForm();
-            });
+            this.projectService.createTask(data).subscribe(handler, () => this.isSubmitting = false);
         }
     }
+
 
     checkIsUserAdmin() {
         this.projectService.getProjectIsAdmin(this.id).subscribe({
@@ -229,14 +235,20 @@ export class ProjectsComponent {
     }
 
     loadProject(id: number | undefined) {
-        this.projectService.getProjectTasks(id).subscribe(tasks => {
-            this.projectTasks = tasks.map(task => ({
-                ...task,
-                comments: task.comments ?? [],
-                newComment: ''
-            }));
-            console.log(this.projectTasks)
-        });
+        this.isLoadingTasks = true;
+
+        setTimeout(() => {
+            this.projectService.getProjectTasks(id).subscribe(tasks => {
+                this.projectTasks = tasks.map(task => ({
+                    ...task,
+                    comments: task.comments ?? [],
+                    newComment: ''
+                }));
+                this.isLoadingTasks = false;
+            }, () => {
+                this.isLoadingTasks = false;
+            });
+        }, 300); // забавяне за ефект
     }
 
     getTasksByStatus(status: string) {
@@ -255,32 +267,38 @@ export class ProjectsComponent {
 
 
     toggleComments(task: TaskInterface) {
-        this.projectService.getComments(task.id).subscribe((comments) => {
-            if (!Array.isArray(comments)) {
-                console.warn('⚠️ Очаквах масив, но получих:', comments);
-                return;
-            }
+        this.isLoadingComments = true;
 
-            task.comments = comments.map(comment => {
-                if (typeof comment.user === 'string') {
-                    try {
-                        comment.user = JSON.parse(comment.user);
-                    } catch (e) {
-                        console.warn('⚠️ Неуспешен JSON.parse на user:', comment.user);
-                        comment.user = {email: 'Unknown'};
-                    }
+        setTimeout(() => {
+            this.projectService.getComments(task.id).subscribe((comments) => {
+                if (!Array.isArray(comments)) {
+                    console.warn('⚠️ Очаквах масив, но получих:', comments);
+                    return;
                 }
-                return comment;
+
+                task.comments = comments.map(comment => {
+                    if (typeof comment.user === 'string') {
+                        try {
+                            comment.user = JSON.parse(comment.user);
+                        } catch (e) {
+                            console.warn('⚠️ Неуспешен JSON.parse на user:', comment.user);
+                            comment.user = {email: 'Unknown'};
+                        }
+                    }
+                    return comment;
+                });
+
+                task.newComment = '';
+                this.selectedTask = task;
+                this.showCommentPopup = true;
+                this.scrollToBottom();
+                this.isLoadingComments = false;
+            }, (error) => {
+                console.error('❌ Грешка при зареждане на коментари:', error);
+                this.isLoadingComments = false;
             });
 
-            task.newComment = '';
-            this.selectedTask = task;
-            this.showCommentPopup = true;
-            this.scrollToBottom();
-        }, (error) => {
-            console.error('❌ Грешка при зареждане на коментари:', error);
-        });
-
+        }, 300);
     }
 
     closeCommentPopup() {
