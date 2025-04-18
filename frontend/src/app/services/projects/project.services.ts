@@ -1,6 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import {ProjectInterface} from '../../interfaces/project.interface';
+import {ProjectUsersInterface} from '../../interfaces/user.interface';
+import {TaskInterface} from '../../interfaces/task.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -15,22 +18,22 @@ export class ProjectServices {
 
 
     getProjects(): Observable<any[]> {
-        return this.http.get<any[]>(this.apiUrlProjects);
+        return this.http.get<ProjectInterface[]>(this.apiUrlProjects);
     }
 
     createProject(data: { name: string, description: string }) {
-        return this.http.post<any>(`${this.apiUrlProjects}/`, data);
+        return this.http.post<ProjectInterface>(`${this.apiUrlProjects}/`, data);
     }
 
     getProjectUsers(projectId: number | undefined): Observable<any[]> {
-        return this.http.get<any[]>(`${this.apiUrlProjects}/users/${projectId}`, {withCredentials: true});
+        return this.http.get<ProjectUsersInterface[]>(`${this.apiUrlProjects}/users/${projectId}`, {withCredentials: true});
     }
 
     getProjectTasks(projectId: number | undefined) {
-        return this.http.get<any[]>(this.apiUrlTasks + `/project/${projectId}`)
+        return this.http.get<TaskInterface[]>(this.apiUrlTasks + `/project/${projectId}`)
     }
     getProjectIsAdmin(projectId: number | undefined) {
-        return this.http.get<any[]>(`${this.apiUrlProjects}/isAdmin/${projectId}`);
+        return this.http.get<boolean>(`${this.apiUrlProjects}/isAdmin/${projectId}`);
     }
     getComments(taskId: number) {
         return this.http.get(`${this.apiUrlComment}/${taskId}`);

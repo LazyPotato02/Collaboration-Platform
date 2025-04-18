@@ -4,6 +4,7 @@ import {NgForOf, NgIf} from '@angular/common';
 import {AuthService} from './auth/services/auth.services';
 import {ProjectServices} from './services/projects/project.services';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ProjectInterface} from './interfaces/project.interface';
 
 @Component({
     selector: 'app-root',
@@ -12,7 +13,7 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
     styleUrl: './app.component.css'
 })
 export class AppComponent {
-    projects: any[] = []
+    projects: ProjectInterface[] = []
     isCreateProjectFormShow: boolean = false;
     form: FormGroup;
     showMobileSidebar = false;

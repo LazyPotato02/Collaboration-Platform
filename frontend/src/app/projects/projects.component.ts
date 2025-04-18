@@ -1,12 +1,14 @@
-import {Component, ElementRef, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Observable, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {ProjectServices} from '../services/projects/project.services';
 import {CommonModule, NgClass, NgForOf} from '@angular/common';
 import {WebSocketService} from '../services/websocket/websocket.service';
 import {CdkDrag, CdkDragDrop, CdkDropList, DragDropModule, transferArrayItem} from '@angular/cdk/drag-drop';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
+import {TaskInterface} from '../interfaces/task.interface';
+import {ProjectUsersInterface, UserInterface} from '../interfaces/user.interface';
 
 @Component({
     selector: 'app-projects',
@@ -27,7 +29,7 @@ import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 export class ProjectsComponent {
     @ViewChild('commentList') commentListRef!: ElementRef;
     id: number | undefined;
-    projectTasks: any[] = [];
+    projectTasks: TaskInterface[] = [];
     private routeSub!: Subscription;
     statuses = ['planning', 'to_do', 'in_progress', 'done'];
     dropListIds = this.statuses.map(status => `list-${status}`);
@@ -39,10 +41,10 @@ export class ProjectsComponent {
     taskToDelete: any = null;
     selectedTask: any = null;
     showInfoPopup = false;
-    projectUsers: any[] = []
-    isUserAdmin: any[] | undefined;
+    projectUsers: ProjectUsersInterface[] = []
+    isUserAdmin: boolean | undefined;
     showCommentPopup = false;
-    user: any;
+    user!: UserInterface;
 
     constructor(private route: ActivatedRoute, private projectService: ProjectServices, private wsService: WebSocketService, private fb: FormBuilder, private snackBar: MatSnackBar) {
         this.form = this.fb.group({
@@ -135,7 +137,7 @@ export class ProjectsComponent {
         })
     }
 
-    editTask(task: any) {
+    editTask(task: TaskInterface) {
         this.isEditMode = true;
         this.editedTaskId = task.id;
 
@@ -145,7 +147,7 @@ export class ProjectsComponent {
         this.showForm = true;
     }
 
-    openDeleteConfirm(task: any) {
+    openDeleteConfirm(task: TaskInterface) {
         this.taskToDelete = task;
         this.showConfirmDelete = true;
     }
@@ -166,7 +168,7 @@ export class ProjectsComponent {
         }
     }
 
-    taskInformation(task: any) {
+    taskInformation(task: TaskInterface) {
         this.selectedTask = task;
         const statusTitles: { [key: string]: string } = {
             planning: 'Planning',
@@ -252,7 +254,7 @@ export class ProjectsComponent {
     }
 
 
-    toggleComments(task: any) {
+    toggleComments(task: TaskInterface) {
         this.projectService.getComments(task.id).subscribe((comments) => {
             if (!Array.isArray(comments)) {
                 console.warn('⚠️ Очаквах масив, но получих:', comments);
@@ -287,7 +289,7 @@ export class ProjectsComponent {
     }
 
 
-    addComment(task: any) {
+    addComment(task: TaskInterface) {
         const content = task.newComment?.trim();
         if (!content) return;
 
