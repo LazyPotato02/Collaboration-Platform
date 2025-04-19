@@ -22,10 +22,17 @@ class RegisterSerializer(ModelSerializer):
         user.save()
         return user
 
+
 class CustomUserSerializer(ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id','email','first_name','last_name']
+        fields = ['id', 'email', 'first_name', 'last_name']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name']
 
 
 class UserMiniSerializer(serializers.ModelSerializer):

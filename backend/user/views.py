@@ -5,11 +5,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from tutorial.quickstart.serializers import UserSerializer
 
 from .models import CustomUser as User
 
-from user.serializers import RegisterSerializer
+from user.serializers import RegisterSerializer, UserSerializer
+
 
 class RegisterView(CreateAPIView):
     serializer_class = RegisterSerializer
@@ -31,7 +31,13 @@ class RegisterView(CreateAPIView):
         return Response(response_data)
 
 
+class AllUsersView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 

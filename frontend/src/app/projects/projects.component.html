@@ -12,24 +12,10 @@
         <label>Due Date</label>
         <input type="datetime-local" formControlName="due_date"/>
 
-        <button type="submit">{{ isEditMode ? 'Update' : 'Create' }}</button>
-        <button type="button" (click)="resetForm()">Cancel</button>
-    </form>
-</div>
-
-<div class="overlay" *ngIf="showForm">
-    <form [formGroup]="form" (ngSubmit)="submit()" class="task-form">
-        <h3 *ngIf="!isEditMode">➕ New Task</h3>
-        <h3 *ngIf="isEditMode">✏️ Edit Task</h3>
-
-        <label>Title</label>
-        <input type="text" formControlName="title"/>
-
-        <label>Description</label>
-        <input type="text" formControlName="description"/>
-
-        <label>Due Date</label>
-        <input type="datetime-local" formControlName="due_date"/>
+        <label>Assigned to</label>
+        <select class="select-assign-user" formControlName="assigned_to">
+            <option *ngFor="let user of projectUsers" [value]="user.id">{{ user.email }}</option>
+        </select>
 
         <button type="submit">{{ isEditMode ? 'Update' : 'Create' }}</button>
         <button type="button" (click)="resetForm()">Cancel</button>
@@ -37,14 +23,34 @@
 </div>
 
 <div class="kanban-container">
+    <div class="top-bar-wrapper">
+        <div class="top-bar">
+            <div class="admin-add-user" *ngIf="isAdminCheckFinished && isUserAdmin">
+                <h3>➕ Add user to project</h3>
+                <form (ngSubmit)="addUserToProject()" #addUserForm="ngForm">
+                    <select [(ngModel)]="selectedUserIdToAdd" name="userId" required>
+                        <option *ngFor="let user of availableUsers" [value]="user.id">
+                            {{ user.email }} ({{ user.first_name }} {{ user.last_name }})
+                        </option>
+                    </select>
+                    <button type="submit" [disabled]="!selectedUserIdToAdd">Добави</button>
+                </form>
+            </div>
 
-    <button class="add-task-button" (click)="openCreateForm()">+</button>
-    <div class="project-users-display">
-    </div>
-    <div class="kanban-board">
-        <div *ngIf="isLoadingTasks" class="loading-indicator">
-            <span class="spinner"></span> Loading tasks...
+            <div class="project-users-display">
+            <span *ngFor="let user of projectUsers" class="user-chip">
+              {{ user.email }}
+            </span>
+            </div>
+
+            <button class="add-task-button" (click)="openCreateForm()">+</button>
         </div>
+    </div>
+    <div *ngIf="isLoadingTasks" class="loading-indicator">
+        <span class="spinner"></span> Loading tasks...
+    </div>
+    <div class="kanban-board" *ngIf="!isLoadingTasks">
+
         <div
             class="kanban-column"
             *ngFor="let status of statuses"
@@ -68,7 +74,7 @@
 
                 <div class="task-actions">
                     <button (click)="toggleComments(task)">💬</button>
-                    <button (click)="taskInformation(task)" >❗</button>
+                    <button (click)="taskInformation(task)">❗</button>
                     <button (click)="editTask(task)" *ngIf="isUserAdmin">✏️</button>
                     <button (click)="openDeleteConfirm(task)" *ngIf="isUserAdmin">🗑️</button>
                 </div>
@@ -90,7 +96,7 @@
         </div>
 
         <form (ngSubmit)="addComment(selectedTask!)" class="comment-form">
-            <input [(ngModel)]="selectedTask!.newComment" name="comment" placeholder="Write a comment..." required />
+            <input [(ngModel)]="selectedTask!.newComment" name="comment" placeholder="Write a comment..." required/>
             <button type="submit">➤</button>
         </form>
 
@@ -120,10 +126,14 @@
         <label>Status</label>
         <div class="readonly-field">{{ selectedTask?.displayStatus }}</div>
 
+        <label>Assigned to</label>
+        <div class="readonly-field">{{ taskAssignedUser?.email }}</div>
+
         <label>Due Date</label>
         <div class="readonly-field">
-            {{ selectedTask?.due_date ? (selectedTask?.due_date | date: 'medium') : '—' }}
+            {{ selectedTask?.due_date | date: 'dd.MM.yyyy HH:mm' }}
         </div>
+
 
         <button type="button" (click)="closeTaskInfo()">Close</button>
     </div>

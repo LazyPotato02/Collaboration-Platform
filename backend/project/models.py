@@ -18,12 +18,11 @@ class ProjectMembership(models.Model):
     ROLE_CHOICES = [
         ('admin', 'Admin'),
         ('member', 'Member'),
-        ('viewer', 'Viewer'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='project_memberships')
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='member')
 
     class Meta:
         unique_together = ('user', 'project')

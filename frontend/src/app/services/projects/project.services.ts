@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {ProjectInterface} from '../../interfaces/project.interface';
-import {ProjectUsersInterface} from '../../interfaces/user.interface';
+import {ProjectUsersInterface, UserInterface} from '../../interfaces/user.interface';
 import {TaskInterface} from '../../interfaces/task.interface';
 
 @Injectable({
@@ -12,6 +12,7 @@ export class ProjectServices {
     apiUrlProjects: string = 'http://localhost:8000/project';
     apiUrlTasks: string = 'http://localhost:8000/task';
     apiUrlComment: string = 'http://localhost:8000/comment';
+    apiUrlUsers: string = 'http://localhost:8000/user';
 
     constructor(private http: HttpClient) {
     }
@@ -29,12 +30,22 @@ export class ProjectServices {
         return this.http.get<ProjectUsersInterface[]>(`${this.apiUrlProjects}/users/${projectId}`, {withCredentials: true});
     }
 
+    getAllUsers() {
+        return this.http.get<UserInterface[]>(`${this.apiUrlUsers}` + '/all', {withCredentials: true});
+    }
+
+    addUserToProject(projectId: number, userId: number) {
+        return this.http.post(`${this.apiUrlProjects}/add/${projectId}/members/`, {user_id: userId});
+    }
+
     getProjectTasks(projectId: number | undefined) {
         return this.http.get<TaskInterface[]>(this.apiUrlTasks + `/project/${projectId}`)
     }
+
     getProjectIsAdmin(projectId: number | undefined) {
         return this.http.get<boolean>(`${this.apiUrlProjects}/isAdmin/${projectId}`);
     }
+
     getComments(taskId: number) {
         return this.http.get(`${this.apiUrlComment}/${taskId}`);
     }
@@ -42,6 +53,7 @@ export class ProjectServices {
     createComment(data: any) {
         return this.http.post(`${this.apiUrlComment}/`, data);
     }
+
     createTask(data: any): Observable<any> {
         return this.http.post<any>(`${this.apiUrlTasks}/`, data, {withCredentials: true});
     }

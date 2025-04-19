@@ -29,7 +29,7 @@ import {ProjectUsersInterface, UserInterface} from '../interfaces/user.interface
 export class ProjectsComponent {
     @ViewChild('commentList') commentListRef!: ElementRef;
     id: number | undefined;
-    projectTasks: TaskInterface[] = [];
+    projectTasks: any[] = [];
     private routeSub!: Subscription;
     statuses = ['planning', 'to_do', 'in_progress', 'done'];
     dropListIds = this.statuses.map(status => `list-${status}`);
@@ -43,8 +43,12 @@ export class ProjectsComponent {
     showInfoPopup = false;
     projectUsers: ProjectUsersInterface[] = []
     isUserAdmin: boolean | undefined;
+    isAdminCheckFinished = false;
     showCommentPopup = false;
     user!: UserInterface;
+    taskAssignedUser: any = null;
+    availableUsers: UserInterface[] = [];
+    selectedUserIdToAdd: number | null = null;
 
     isLoadingTasks = false;
     isLoadingComments = false;
@@ -116,7 +120,7 @@ export class ProjectsComponent {
         }
 
         this.isSubmitting = true;
-        const data = { ...this.form.value, id: this.editedTaskId, project: this.id };
+        const data = {...this.form.value, id: this.editedTaskId, project: this.id};
 
         const handler = () => {
             this.loadProject(this.id);
@@ -136,11 +140,14 @@ export class ProjectsComponent {
         this.projectService.getProjectIsAdmin(this.id).subscribe({
             next: isAdmin => {
                 this.isUserAdmin = isAdmin;
+                this.isAdminCheckFinished = true;
             },
             error: error => {
                 console.log('User is Not Admin');
+                this.isUserAdmin = false;
+                this.isAdminCheckFinished = true;
             }
-        })
+        });
     }
 
     editTask(task: TaskInterface) {
@@ -174,6 +181,11 @@ export class ProjectsComponent {
         }
     }
 
+    getAssignedUserFromId(id: number) {
+        this.taskAssignedUser = this.projectUsers.find(user => user.id === id);
+
+    }
+
     taskInformation(task: TaskInterface) {
         this.selectedTask = task;
         const statusTitles: { [key: string]: string } = {
@@ -183,7 +195,7 @@ export class ProjectsComponent {
             done: 'Done',
             finished: 'Finished'
         };
-
+        this.getAssignedUserFromId(this.selectedTask.assigned_to)
         this.selectedTask = {
             ...task,
             displayStatus: statusTitles[task.status] || task.status
@@ -244,11 +256,12 @@ export class ProjectsComponent {
                     comments: task.comments ?? [],
                     newComment: ''
                 }));
+                console.log(this.projectTasks);
                 this.isLoadingTasks = false;
             }, () => {
                 this.isLoadingTasks = false;
             });
-        }, 300); // забавяне за ефект
+        }, 300);
     }
 
     getTasksByStatus(status: string) {
@@ -257,14 +270,39 @@ export class ProjectsComponent {
 
     getProjectMembers() {
         this.projectService.getProjectUsers(this.id).subscribe(users => {
-                for (const user of users) {
-                    this.projectUsers.push(user);
-                }
-                console.log(this.projectUsers);
-            }
-        )
+            this.projectUsers = users;
+            this.loadAvailableUsers();
+        });
     }
 
+    loadAvailableUsers() {
+        this.projectService.getAllUsers().subscribe(allUsers => {
+            const projectUserIds = this.projectUsers.map(u => u.id);
+            this.availableUsers = allUsers.filter(user => !projectUserIds.includes(user.id));
+        });
+    }
+
+    addUserToProject() {
+        if (!this.selectedUserIdToAdd || !this.id) return;
+
+        this.projectService.addUserToProject(this.id, this.selectedUserIdToAdd).subscribe(() => {
+            this.snackBar.open('✅ User successfully added', 'OK', {
+                duration: 2000,
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+                panelClass: ['custom-snackbar']
+            });
+            this.getProjectMembers();
+            this.selectedUserIdToAdd = null;
+        }, error => {
+            // console.error('❌ Error while adding user:', error);
+            this.snackBar.open('❌ Error while adding user', 'OK', {
+                duration: 3000,
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+                panelClass: ['custom-snackbar']});
+        });
+    }
 
     toggleComments(task: TaskInterface) {
         this.isLoadingComments = true;
@@ -272,7 +310,7 @@ export class ProjectsComponent {
         setTimeout(() => {
             this.projectService.getComments(task.id).subscribe((comments) => {
                 if (!Array.isArray(comments)) {
-                    console.warn('⚠️ Очаквах масив, но получих:', comments);
+                    console.warn('⚠️ Expected list but got:', comments);
                     return;
                 }
 
@@ -281,7 +319,7 @@ export class ProjectsComponent {
                         try {
                             comment.user = JSON.parse(comment.user);
                         } catch (e) {
-                            console.warn('⚠️ Неуспешен JSON.parse на user:', comment.user);
+                            console.warn('⚠️ Wrong JSON.parse for user:', comment.user);
                             comment.user = {email: 'Unknown'};
                         }
                     }
@@ -294,7 +332,7 @@ export class ProjectsComponent {
                 this.scrollToBottom();
                 this.isLoadingComments = false;
             }, (error) => {
-                console.error('❌ Грешка при зареждане на коментари:', error);
+                console.error('❌ Error while loading comments:', error);
                 this.isLoadingComments = false;
             });
 

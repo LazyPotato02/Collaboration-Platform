@@ -63,8 +63,8 @@ class CheckIsUserAdmin(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, project_id):
-        is_admin = ProjectMembership.objects.filter(user=request.user, project_id=project_id,role='admin').first()
-        if is_admin :
+        is_admin = ProjectMembership.objects.filter(user=request.user, project_id=project_id, role='admin').first()
+        if is_admin:
             return Response({"is_admin": True}, status=status.HTTP_200_OK)
         return Response({"is_admin": False}, status=status.HTTP_403_FORBIDDEN)
 
@@ -84,3 +84,32 @@ class ProjectMembershipView(APIView):
         users = project.members.all()
         serializer = CustomUserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, project_id=None):
+        user_id = request.data.get('user_id')
+        project = get_object_or_404(Project, id=project_id)
+
+        is_admin = ProjectMembership.objects.filter(
+            user=request.user,
+            project=project,
+            role='admin'
+        ).exists()
+
+        if not is_admin:
+            return Response({"error": "Only admins can add users."}, status=status.HTTP_403_FORBIDDEN)
+
+        if not user_id:
+            return Response({"error": "Missing user_id."}, status=status.HTTP_400_BAD_REQUEST)
+
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        project.members.add(user)
+
+        ProjectMembership.objects.get_or_create(user=user, project=project, defaults={"role": "member"})
+
+        return Response({"success": f"User {user.email} added to project."}, status=status.HTTP_200_OK)
