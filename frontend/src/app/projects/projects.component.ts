@@ -28,9 +28,10 @@ import {ProjectUsersInterface, UserInterface} from '../interfaces/user.interface
 })
 export class ProjectsComponent {
     @ViewChild('commentList') commentListRef!: ElementRef;
-    id: number | undefined;
-    projectTasks: any[] = [];
     private routeSub!: Subscription;
+    id: number | undefined;
+    userId: number = 0;
+    projectTasks: any[] = [];
     statuses = ['planning', 'to_do', 'in_progress', 'done'];
     dropListIds = this.statuses.map(status => `list-${status}`);
     form: FormGroup;
@@ -49,10 +50,12 @@ export class ProjectsComponent {
     taskAssignedUser: any = null;
     availableUsers: UserInterface[] = [];
     selectedUserIdToAdd: number | null = null;
-
+    selectedRole: string = 'viewer';
+    openedUserMenuId: number | null = null;
     isLoadingTasks = false;
     isLoadingComments = false;
     isSubmitting = false;
+    openAddUserForm: boolean = false;
 
     constructor(private route: ActivatedRoute, private projectService: ProjectServices, private wsService: WebSocketService, private fb: FormBuilder, private snackBar: MatSnackBar) {
         this.form = this.fb.group({
@@ -65,7 +68,9 @@ export class ProjectsComponent {
 
     ngOnInit() {
         const userStr = localStorage.getItem('user');
+
         this.user = userStr ? JSON.parse(userStr) : null;
+        this.userId = this.user.id;
         this.routeSub = this.route.params.subscribe(params => {
             this.id = +params['id'];
             this.loadProject(this.id);
@@ -284,8 +289,7 @@ export class ProjectsComponent {
 
     addUserToProject() {
         if (!this.selectedUserIdToAdd || !this.id) return;
-
-        this.projectService.addUserToProject(this.id, this.selectedUserIdToAdd).subscribe(() => {
+        this.projectService.addUserToProject(this.id, this.selectedUserIdToAdd, this.selectedRole).subscribe(() => {
             this.snackBar.open('✅ User successfully added', 'OK', {
                 duration: 2000,
                 horizontalPosition: 'right',
@@ -293,6 +297,7 @@ export class ProjectsComponent {
                 panelClass: ['custom-snackbar']
             });
             this.getProjectMembers();
+            this.openAddUserForm = false
             this.selectedUserIdToAdd = null;
         }, error => {
             // console.error('❌ Error while adding user:', error);
@@ -300,7 +305,34 @@ export class ProjectsComponent {
                 duration: 3000,
                 horizontalPosition: 'right',
                 verticalPosition: 'top',
-                panelClass: ['custom-snackbar']});
+                panelClass: ['custom-snackbar']
+            });
+        });
+    }
+
+    setOpenAddUserForm(){
+        this.openAddUserForm = true;
+    }
+    closeUserPopup(){
+        this.openAddUserForm = false;
+    }
+
+    toggleUserMenu(userId: number) {
+        this.openedUserMenuId = this.openedUserMenuId === userId ? null : userId;
+    }
+
+    removeUser(userId: number) {
+        if (!confirm('Confirm removing user from current project!')) return;
+
+        this.projectService.removeUserFromProject(this.id!, userId).subscribe(() => {
+            this.snackBar.open('✅User removed from the project successfully.', 'OK', {
+                duration: 2000,
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+                panelClass: ['custom-snackbar']
+            });
+            this.getProjectMembers();
+            this.openedUserMenuId = null;
         });
     }
 

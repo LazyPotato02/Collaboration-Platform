@@ -4,6 +4,7 @@
     border: none !important;
     padding: 0 !important;
     border-radius: 20px !important;;
+    font-family: 'Inter', sans-serif;
 }
 
 .mdc-snackbar__surface {

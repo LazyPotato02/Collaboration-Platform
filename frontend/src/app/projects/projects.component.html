@@ -9,13 +9,14 @@
         <label>Description</label>
         <input type="text" formControlName="description"/>
 
-        <label>Due Date</label>
-        <input type="datetime-local" formControlName="due_date"/>
-
         <label>Assigned to</label>
         <select class="select-assign-user" formControlName="assigned_to">
             <option *ngFor="let user of projectUsers" [value]="user.id">{{ user.email }}</option>
         </select>
+
+        <label>Due Date</label>
+        <input type="datetime-local" formControlName="due_date"/>
+
 
         <button type="submit">{{ isEditMode ? 'Update' : 'Create' }}</button>
         <button type="button" (click)="resetForm()">Cancel</button>
@@ -25,25 +26,53 @@
 <div class="kanban-container">
     <div class="top-bar-wrapper">
         <div class="top-bar">
-            <div class="admin-add-user" *ngIf="isAdminCheckFinished && isUserAdmin">
-                <h3>➕ Add user to project</h3>
-                <form (ngSubmit)="addUserToProject()" #addUserForm="ngForm">
-                    <select [(ngModel)]="selectedUserIdToAdd" name="userId" required>
-                        <option *ngFor="let user of availableUsers" [value]="user.id">
-                            {{ user.email }} ({{ user.first_name }} {{ user.last_name }})
-                        </option>
-                    </select>
-                    <button type="submit" [disabled]="!selectedUserIdToAdd">Добави</button>
-                </form>
+            <div class="overlay" *ngIf="openAddUserForm && isAdminCheckFinished && isUserAdmin">
+                <div class="admin-popup">
+                    <div class="admin-add-user">
+                        <h3>➕ Add user to project</h3>
+                        <form (ngSubmit)="addUserToProject()" #addUserForm="ngForm">
+                            <select [(ngModel)]="selectedUserIdToAdd" name="userId" required>
+                                <option *ngFor="let user of availableUsers" [value]="user.id">
+                                    {{ user.email }} ({{ user.first_name }} {{ user.last_name }})
+                                </option>
+                            </select>
+
+                            <select name="role" required [(ngModel)]="selectedRole">
+                                <option value="viewer">Viewer</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            <div class="add-user-btn">
+                                <button type="submit" [disabled]="!selectedUserIdToAdd">Add</button>
+                                <button type="button" (click)="closeUserPopup()" class="cancel-btn">Close</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
             </div>
 
+
+            <div class="top-bar-buttons">
+                <button class="add-task-button" (click)="openCreateForm()">+</button>
+                <button class="add-user-button" (click)="setOpenAddUserForm()">Add User</button>
+            </div>
             <div class="project-users-display">
-            <span *ngFor="let user of projectUsers" class="user-chip">
-              {{ user.email }}
-            </span>
-            </div>
+                <div *ngFor="let user of projectUsers" class="user-chip-wrapper">
+                    <span class="user-chip">{{ user.email }}</span>
 
-            <button class="add-task-button" (click)="openCreateForm()">+</button>
+                    <ng-container *ngIf="isUserAdmin">
+                        <div class="user-menu-wrapper">
+                            <button (click)="toggleUserMenu(user.id)" *ngIf="user.id !== userId"
+                                    class="user-menu-toggle">⋮
+                            </button>
+
+                            <div class="user-menu" *ngIf="openedUserMenuId === user.id">
+                                <button (click)="removeUser(user.id)">❌ Премахни</button>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
         </div>
     </div>
     <div *ngIf="isLoadingTasks" class="loading-indicator">

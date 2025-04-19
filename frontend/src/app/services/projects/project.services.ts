@@ -34,10 +34,14 @@ export class ProjectServices {
         return this.http.get<UserInterface[]>(`${this.apiUrlUsers}` + '/all', {withCredentials: true});
     }
 
-    addUserToProject(projectId: number, userId: number) {
-        return this.http.post(`${this.apiUrlProjects}/add/${projectId}/members/`, {user_id: userId});
+    addUserToProject(projectId: number, userId: number, role: string) {
+        return this.http.post(`${this.apiUrlProjects}/add/${projectId}/members/`, {user_id: userId, role: role});
     }
-
+    removeUserFromProject(projectId: number, userId: number) {
+        return this.http.request('delete', `${this.apiUrlProjects}/add/${projectId}/members/`, {
+            body: { user_id: userId }
+        });
+    }
     getProjectTasks(projectId: number | undefined) {
         return this.http.get<TaskInterface[]>(this.apiUrlTasks + `/project/${projectId}`)
     }

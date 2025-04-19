@@ -113,7 +113,28 @@
 .add-task-button:hover {
     background-color: #4338ca;
 }
+.add-user-button {
+    position: absolute;
+    top: 1.4%;
+    right: 5rem;
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 10%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: background 0.2s ease;
+    padding:10px
+}
 
+.add-user-button:hover {
+    background-color: #4338ca;
+}
 .task-actions {
     display: flex;
     justify-content: flex-end;
@@ -226,7 +247,18 @@
         top: -0.25rem;
         right: 0.5rem;
     }
+    .add-user-button {
+        top: 10px;
+        height: 36px;
+        font-size: 1.25rem;
+    }
 }
+@media (min-width: 769px) {
+    .top-bar-buttons {
+        justify-content: flex-end;
+    }
+}
+
 .confirm-modal {
     background: #fff;
     padding: 2rem;
@@ -406,18 +438,17 @@
 
 
 /* === Add User форма === */
-.admin-add-user {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    min-width: 260px;
-    max-width: 300px;
-    flex-shrink: 0;
+.admin-popup {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.3s ease;
+    width: 100%;
+    max-width: 360px;
 }
 
-.admin-add-user h3 {
+.admin-popup h3 {
     margin-top: 0;
     font-size: 1.1rem;
     color: #6b21a8;
@@ -426,7 +457,7 @@
     gap: 0.3rem;
 }
 
-.admin-add-user select {
+.admin-popup select {
     width: 100%;
     padding: 8px 12px;
     margin-bottom: 12px;
@@ -435,7 +466,7 @@
     font-size: 1rem;
 }
 
-.admin-add-user button {
+.admin-popup button {
     padding: 8px 16px;
     font-size: 1rem;
     border: none;
@@ -446,15 +477,18 @@
     transition: background-color 0.2s ease;
 }
 
-.admin-add-user button:disabled {
+.admin-popup button:disabled {
     background-color: #b0c4de;
     cursor: not-allowed;
 }
 
-.admin-add-user button:hover:not(:disabled) {
+.admin-popup button:hover:not(:disabled) {
     background-color: #4338ca;
 }
-
+.add-user-btn{
+    display: flex;
+    flex-direction: column;
+}
 /* === Потребителски чипове === */
 .project-users-display {
     display: flex;
@@ -613,6 +647,49 @@
     white-space: nowrap;
     z-index: 10;
 }
+.user-chip-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.user-menu-wrapper {
+    position: relative;
+}
+
+.user-menu-toggle {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.2rem;
+}
+
+.user-menu {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.user-menu button {
+    background: none;
+    border: none;
+    color: #dc2626;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.user-menu button:hover {
+    text-decoration: underline;
+}
+
+
 /* === Task actions (иконки) === */
 .task-actions {
     display: flex;
@@ -633,6 +710,12 @@
     border-radius: 1.5rem;
 }
 
+
+.top-bar-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 .task-actions button:hover:nth-child(4) {
     background: red;
 }
@@ -672,15 +755,26 @@
         flex-direction: column;
         align-items: stretch;
     }
-
+    .top-bar-buttons {
+        justify-content: center;
+        width: 100%;
+    }
     .admin-add-user,
     .project-users-display,
     .add-task-button {
-        width: 100%;
         max-width: none;
     }
 
     .add-task-button {
         justify-content: center;
+    }
+}
+@media (max-width: 480px) {
+    .add-user-button {
+        right: 0.5rem;
+        top: 8px;
+        width: 32px;
+        height: 32px;
+        font-size: 1.1rem;
     }
 }

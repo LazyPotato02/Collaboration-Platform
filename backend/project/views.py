@@ -88,7 +88,7 @@ class ProjectMembershipView(APIView):
     def post(self, request, project_id=None):
         user_id = request.data.get('user_id')
         project = get_object_or_404(Project, id=project_id)
-
+        role = request.data.get('role', 'member')
         is_admin = ProjectMembership.objects.filter(
             user=request.user,
             project=project,
@@ -110,6 +110,45 @@ class ProjectMembershipView(APIView):
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
         project.members.add(user)
 
-        ProjectMembership.objects.get_or_create(user=user, project=project, defaults={"role": "member"})
+        membership, created = ProjectMembership.objects.get_or_create(
+            user=user,
+            project=project,
+            defaults={"role": role}
+        )
+
+        if not created and membership.role != role:
+            membership.role = role
+            membership.save()
 
         return Response({"success": f"User {user.email} added to project."}, status=status.HTTP_200_OK)
+
+    def delete(self, request, project_id=None):
+        user_id = request.data.get('user_id')
+
+        if not user_id:
+            return Response({"error": "Missing user_id."}, status=status.HTTP_400_BAD_REQUEST)
+
+        project = get_object_or_404(Project, id=project_id)
+
+        is_admin = ProjectMembership.objects.filter(
+            user=request.user,
+            project=project,
+            role='admin'
+        ).exists()
+
+        if not is_admin:
+            return Response({"error": "Only admins can remove members."}, status=status.HTTP_403_FORBIDDEN)
+        
+        if int(user_id) == request.user.id:
+            admin_count = ProjectMembership.objects.filter(project=project, role='admin').count()
+
+            if admin_count <= 1:
+                return Response({"error": "You are the last admin. You can't remove yourself."}, status=403)
+
+        try:
+            membership = ProjectMembership.objects.get(user_id=user_id, project=project)
+            membership.delete()
+            project.members.remove(user_id)  # 🔁 Махаме и от ManyToMany полето
+            return Response({"success": "User removed from project."}, status=status.HTTP_200_OK)
+        except ProjectMembership.DoesNotExist:
+            return Response({"error": "Membership not found."}, status=status.HTTP_404_NOT_FOUND)
