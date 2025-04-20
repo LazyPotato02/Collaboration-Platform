@@ -1,5 +1,5 @@
 <p align="right">
-🇬🇧 <a href="README.md">Read in English</a>
+🇬🇧 <a href="README.md"><strong>Read in English</strong></a>
 </p>
 
 # 🧩 Task & Team Collaboration Platform
