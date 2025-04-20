@@ -24,6 +24,7 @@
                 <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="error">
                     <small *ngIf="form.get('name')?.errors?.['required']">Name is required.</small>
                     <small *ngIf="form.get('name')?.errors?.['minlength']">Minimum 5 characters.</small>
+                    <small *ngIf="form.get('name')?.errors?.['maxlength']">Maximum 15 characters.</small>
                 </div>
                 <label>Description</label>
                 <input type="text" formControlName="description" />
@@ -43,6 +44,7 @@
             <ul class="project-list-scroll">
                 <li *ngFor="let project of projects">
                     <a [routerLink]="['/projects', project.id]" (click)="toggleSidebar()">{{ project.name }}</a>
+
                 </li>
             </ul>
         </div>
@@ -52,7 +54,10 @@
         <h3 class="sidebar-title">Projects</h3>
         <ul class="project-list-scroll">
             <li *ngFor="let project of projects">
-                <a [routerLink]="['/projects', project.id]">{{ project.name }}</a>
+                <a class="project-name" [title]="project.name" [routerLink]="['/projects', project.id]">{{ project.name }}</a>
+                <a (click)="displayProjectDescription(project.id)" class="info-button" title="Project Details">
+                    <i class="fa-solid fa-circle-info"></i>
+                </a>
             </li>
         </ul>
     </aside>
@@ -60,4 +65,18 @@
     <main class="main-content">
         <router-outlet></router-outlet>
     </main>
+</div>
+
+
+<div class="overlay" *ngIf="showDescriptionPopup">
+    <div class="task-form readonly-form">
+        <h3>📋 Project Description</h3>
+
+        <label>Description</label>
+        <div class="project-description-text">{{ projectDescription }}</div>
+
+
+
+        <button type="button" (click)="closeDescriptionPopup()">Close</button>
+    </div>
 </div>

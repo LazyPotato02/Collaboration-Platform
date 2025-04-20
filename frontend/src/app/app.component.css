@@ -1,3 +1,5 @@
+@import "projects/projects.component.css";
+
 * {
     font-family: 'Inter', sans-serif;
 }
@@ -48,9 +50,14 @@ body {
     height: calc(100vh - 72px);
     overflow: hidden;
 }
-
+.project-description-text {
+    word-wrap: break-word; /* старото */
+    overflow-wrap: break-word; /* новото */
+    white-space: pre-wrap; /* запазва нови редове и пренася */
+    max-width: 100%;
+}
 .sidebar {
-    width: 220px;
+    width: 300px;
     background-color: #f3f4f6;
     padding: 1rem;
     border-right: 1px solid #e5e7eb;
@@ -70,6 +77,21 @@ body {
     align-items: center;
     gap: 0.5rem;
 }
+.sidebar li {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.project-name {
+    display: inline-block;
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
 
 .sidebar h3 {
     text-align: center;
@@ -84,7 +106,6 @@ body {
     text-decoration: none;
     color: #374151;
     font-size: 20px;
-    width: 100%;
     font-weight: bold;
     text-align: center;
 }

@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {Router, RouterLink, RouterOutlet} from '@angular/router';
-import {NgForOf, NgIf} from '@angular/common';
+import {DatePipe, NgForOf, NgIf} from '@angular/common';
 import {AuthService} from './auth/services/auth.services';
 import {ProjectServices} from './services/projects/project.services';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -17,13 +17,15 @@ export class AppComponent {
     isCreateProjectFormShow: boolean = false;
     form: FormGroup;
     showMobileSidebar = false;
+    projectDescription: string = '';
+    showDescriptionPopup:boolean = false;
     get isLoggedIn(): boolean {
         return this.authService.isAuthenticated();
     }
 
     constructor(private authService: AuthService, private projectService: ProjectServices, private router: Router, private fb: FormBuilder) {
         this.form = this.fb.group({
-            name: ['', [Validators.required, Validators.minLength(5)]],
+            name: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(20)]],
             description: ['', [Validators.required, Validators.minLength(20)]],
         });
     }
@@ -34,6 +36,7 @@ export class AppComponent {
         }
 
     }
+
     loadProjects(): void {
         this.projectService.getProjects().subscribe({
             next: (data) => {
@@ -44,6 +47,21 @@ export class AppComponent {
             }
         });
     }
+
+    displayProjectDescription(projectId: number) {
+        this.showDescriptionPopup = true;
+        for (const project of this.projects) {
+            if (project.id === projectId) {
+                this.projectDescription = project.description;
+            }
+        }
+
+    }
+
+    closeDescriptionPopup(){
+        this.showDescriptionPopup = false;
+    }
+
     changeCreateProjectFormShow(): void {
         this.isCreateProjectFormShow = true;
     }
@@ -71,9 +89,11 @@ export class AppComponent {
 
         })
     }
+
     toggleSidebar() {
         this.showMobileSidebar = !this.showMobileSidebar;
     }
+
     logout(): void {
         this.authService.logout();
         this.router.navigate(['/login']);
