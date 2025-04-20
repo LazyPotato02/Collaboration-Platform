@@ -54,7 +54,7 @@
 
             <div class="top-bar-buttons">
                 <button class="add-task-button" (click)="openCreateForm()">+</button>
-                <button class="add-user-button" (click)="setOpenAddUserForm()">Add User</button>
+                <button *ngIf="isUserAdmin" class="add-user-button" (click)="setOpenAddUserForm()">Add User</button>
             </div>
             <div class="project-users-display">
                 <div *ngFor="let user of projectUsers" class="user-chip-wrapper">
