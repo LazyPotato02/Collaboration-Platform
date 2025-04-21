@@ -1,0 +1,27 @@
+<div class="home-container">
+    <h1 class="title">🚀 Boost Your Team's Productivity</h1>
+    <p class="subtitle">
+        Plan, assign, and track tasks visually.<br />
+        Collaborate in real-time and stay in sync with your team.
+    </p>
+
+    <div class="actions">
+        <a *ngIf="isAuthenticated" routerLink="/register" class="btn primary">Get Started</a>
+        <a routerLink="/about" class="btn secondary">Learn More</a>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <h3>📋 Kanban Boards</h3>
+            <p>Visualize your workflow and move tasks across columns with drag & drop.</p>
+        </div>
+        <div class="feature-card">
+            <h3>💬 Real-time Collaboration</h3>
+            <p>Comment on tasks, get live updates, and chat with your teammates.</p>
+        </div>
+        <div class="feature-card">
+            <h3>🔐 Secure & Scalable</h3>
+            <p>JWT authentication, role-based access, and Docker-ready deployment.</p>
+        </div>
+    </div>
+</div>
