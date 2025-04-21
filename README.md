@@ -1,5 +1,5 @@
 <p align="right">
-🇧🇬 <a href="README.bg.md">Прочети на български</a>
+🇧🇬 <a href="README.bg.md"><strong>Read in Bulgarian</strong></a></a>
 </p>
 
 # 🧩 Task & Team Collaboration Platform
