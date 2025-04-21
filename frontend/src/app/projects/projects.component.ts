@@ -261,7 +261,6 @@ export class ProjectsComponent {
                     comments: task.comments ?? [],
                     newComment: ''
                 }));
-                console.log(this.projectTasks);
                 this.isLoadingTasks = false;
             }, () => {
                 this.isLoadingTasks = false;

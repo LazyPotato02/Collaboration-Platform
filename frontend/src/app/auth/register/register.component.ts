@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import {Router, RouterLink} from '@angular/router';
 import { NgIf } from '@angular/common';
 import {AuthService} from '../services/auth.services';
+import {strongPasswordValidator} from './passwordValidator';
 
 @Component({
     selector: 'app-register',
@@ -21,20 +22,36 @@ export class RegisterComponent {
             email: ['', [Validators.required, Validators.email]],
             firstName: ['', [Validators.required]],
             lastName: ['', [Validators.required]],
-            password: ['', [Validators.required, Validators.minLength(6)]]
+            password: ['', [Validators.required, Validators.minLength(6),strongPasswordValidator()]]
         });
+    }
+    get email() {
+        return this.registerForm.get('email')!;
+    }
+
+    get firstName() {
+        return this.registerForm.get('firstName')!;
+    }
+
+    get lastName() {
+        return this.registerForm.get('lastName')!;
+    }
+
+    get password() {
+        return this.registerForm.get('password')!;
     }
 
     register() {
+        this.errorMessage = '';
+
         if (this.registerForm.valid) {
             this.authService.register(
-                this.registerForm.value.email,
-                this.registerForm.value.firstName,
-                this.registerForm.value.lastName,
-                this.registerForm.value.password
+                this.email.value,
+                this.firstName.value,
+                this.lastName.value,
+                this.password.value
             ).subscribe({
                 next: (response) => {
-                    this.message = "Registration successful!";
                     localStorage.setItem('access_token', response.access);
                     localStorage.setItem('refresh_token', response.refresh);
                     this.authService.getCurrentUser().subscribe({
@@ -47,16 +64,19 @@ export class RegisterComponent {
                             console.error('Failed to fetch user data:', error);
                         }
                     });
-                    this.router.navigate(['/login']);
-                    window.location.reload();
-
                 },
                 error: (err) => {
-                    this.errorMessage = err.error?.message || 'Registration failed';
+                    const errorObj = err.error;
+                    if (errorObj?.email?.length > 0) {
+                        this.email.setErrors({ backend: errorObj.email[0] });
+                    } else {
+                        this.errorMessage = errorObj?.message || 'Registration failed.';
+                    }
                 }
             });
         } else {
             this.errorMessage = 'Please fill in all fields correctly.';
+            this.registerForm.markAllAsTouched();
         }
     }
 }

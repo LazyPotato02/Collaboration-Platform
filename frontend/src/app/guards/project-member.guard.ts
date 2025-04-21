@@ -11,8 +11,6 @@ export const projectMemberGuard: CanActivateFn = (
 
     const projectId =+route.paramMap.get('id')!;
     const userJson = localStorage.getItem('user');
-    console.log(projectId);
-    console.log(userJson);
     if (!userJson) {
         router.navigate(['/login']);
         return of(false);

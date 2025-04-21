@@ -4,20 +4,41 @@
 
         <div class="form-group">
             <input formControlName="email" type="email" placeholder="Email" />
+            <div *ngIf="email.invalid && (email.dirty || email.touched)" style="color: red; margin-bottom: 1rem;">
+                <div *ngIf="email.errors?.['required']">Email is required.</div>
+                <div *ngIf="email.errors?.['email']">Please enter a valid email.</div>
+                <div *ngIf="email.errors?.['backend']">{{ email.errors?.['backend'] }}</div>
+            </div>
         </div>
+
         <div class="form-group">
             <input formControlName="firstName" type="text" placeholder="First Name" />
+            <div *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)" style="color: red; margin-bottom: 1rem;">
+                <div *ngIf="firstName.errors?.['required']">First name is required.</div>
+            </div>
         </div>
+
         <div class="form-group">
             <input formControlName="lastName" type="text" placeholder="Last Name" />
+            <div *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)" style="color: red; margin-bottom: 1rem;">
+                <div *ngIf="lastName.errors?.['required']">Last name is required.</div>
+            </div>
         </div>
+
         <div class="form-group">
             <input formControlName="password" type="password" placeholder="Password" />
+            <div *ngIf="password.errors?.['weakPassword'] && (password.dirty || password.touched)" style="color: red; margin-bottom: 1rem;">
+                <div *ngIf="!password.errors?.['weakPassword'].isLongEnough">At least 8 characters</div>
+                <div *ngIf="!password.errors?.['weakPassword'].hasUpperCase">One uppercase letter</div>
+                <div *ngIf="!password.errors?.['weakPassword'].hasLowerCase">One lowercase letter</div>
+                <div *ngIf="!password.errors?.['weakPassword'].hasDigit">One digit</div>
+                <div *ngIf="!password.errors?.['weakPassword'].hasSpecial">One special character</div>
+            </div>
         </div>
-        <div *ngIf="errorMessage" style="color: red; margin-bottom: 1rem;">
-            {{ errorMessage }}
-        </div>
+
+
         <button type="submit">Register</button>
+
         <div style="text-align: center; margin-top: 1rem;">
             <a routerLink="/login">Already have an account? Login</a>
         </div>
