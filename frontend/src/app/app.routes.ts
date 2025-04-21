@@ -3,9 +3,10 @@ import {LoginComponent} from './auth/login/login.component';
 import {AuthGuard, GuestGuard} from './auth/guards/auth.guard';
 import {RegisterComponent} from './auth/register/register.component';
 import {ProjectsComponent} from './projects/projects.component';
+import {projectMemberGuard} from './guards/project-member.guard';
 
 export const routes: Routes = [
     {path: 'login', component: LoginComponent, canActivate: [GuestGuard]},
     {path: 'register', component: RegisterComponent, canActivate: [GuestGuard]},
-    {path: 'projects/:id', component: ProjectsComponent, canActivate: [AuthGuard]},
+    {path: 'projects/:id', component: ProjectsComponent, canActivate: [AuthGuard,projectMemberGuard]},
 ];

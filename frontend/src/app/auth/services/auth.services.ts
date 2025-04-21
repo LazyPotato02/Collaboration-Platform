@@ -94,4 +94,7 @@ export class AuthService {
         localStorage.removeItem('user');
         window.location.href = '/login';
     }
+
+
+
 }
